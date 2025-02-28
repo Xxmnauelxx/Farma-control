@@ -36,6 +36,23 @@
             font-family: Arial;
         }
 
+        .watermark {
+    position: absolute;
+    top: 45%;
+    left: 50%;
+    transform: translate(-50%, -90%) rotate(-50deg);
+    font-size: 80px;
+    color: rgba(255, 0, 0, 0.2); /* Rojo con transparencia */
+    font-weight: bold;
+    text-transform: uppercase;
+    z-index: 1000; /* Mayor que la tabla */
+    white-space: nowrap;
+    pointer-events: none; /* No interfiere con clics en la tabla */
+}
+
+
+
+
         header {
             padding: 10px 0;
             margin-bottom: 30px;
@@ -162,7 +179,7 @@
             color: #5D6975;
             width: 100%;
             height: 10px;
-            position:relative;
+            position: relative;
             bottom: -400px;
             border-top: 1px solid #C1CED9;
             text-align: center;
@@ -195,6 +212,9 @@
         </div>
     </header>
 
+    @if ($compra->estado !== 'Cancelado')
+        <div class="watermark">NO CANCELADO</div>
+    @endif
     <main>
         <table>
             <thead>
@@ -218,7 +238,7 @@
                         <td class="servic">{{ $lote->cantidad }}</td>
                         <td class="servic">{{ $lote->vencimiento }}</td>
                         <td class="servic">
-                            S/.{{ number_format($lote->precio_compra, 2) }}</td>
+                            CS/.{{ number_format($lote->precio_compra, 2) }}</td>
                         <td class="servic">{{ $lote->producto }} |
                             {{ $lote->concentracion }}</td>
                         <td class="servic">{{ $lote->laboratorio }}</td>
@@ -228,30 +248,33 @@
                 @endforeach
 
                 @php
-                    $igv = $compra->total * 0.18;
-                    $sub = $compra->total - $igv;
+                    $subtotal = 0;
+
+                    // Recorrer los lotes para calcular el subtotal
+                    foreach ($lotes as $lote) {
+                        $subtotal += $lote->precio_compra * $lote->cantidad; // Precio por cantidad
+                    }
+
+                    // Calcular IGV (18%)
+                    $igv = $subtotal * 0.15;
+
+                    // Calcular el total (Subtotal + IGV)
+                    $total = $subtotal + $igv;
                 @endphp
 
                 <tr>
-                    <td colspan="8"
-                    class="grand total" >SUBTOTAL
-                    </td>
-                    <td class="grand total" >S/.{{ number_format($sub, 2) }}
-                    </td>
+                    <td colspan="8" class="grand total">SUBTOTAL</td>
+                    <td class="grand total">CS/.{{ number_format($subtotal, 2) }}</td>
                 </tr>
                 <tr>
-                    <td colspan="8"
-                    class="grand total" >IGV (18%)
-                    </td>
-                    <td class="grand total" >S/.{{ number_format($igv, 2) }}
-                    </td>
+                    <td colspan="8" class="grand total">IGV (15%)</td>
+                    <td class="grand total">CS/.{{ number_format($igv, 2) }}</td>
                 </tr>
                 <tr>
-                    <td colspan="8"
-                    class="grand total" >TOTAL</td>
-                    <td class="grand total" >
-                        S/.{{ number_format($compra->total, 2) }}</td>
+                    <td colspan="8" class="grand total">TOTAL</td>
+                    <td class="grand total">CS/.{{ number_format($total, 2) }}</td>
                 </tr>
+
             </tbody>
         </table>
 
