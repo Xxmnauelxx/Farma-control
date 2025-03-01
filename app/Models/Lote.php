@@ -18,6 +18,7 @@ class Lote extends Model
         'cantidad',
         'vencimiento',
         'precio_compra',
+        'cantidad_lote',
         'id_compra',
         'id_producto',
     ];

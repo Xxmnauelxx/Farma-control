@@ -7,6 +7,7 @@ use App\Http\Controllers\Backend\CompraController;
 use App\Http\Controllers\Backend\ProductoController;
 use App\Http\Controllers\Backend\ProveedorController;
 use App\Http\Controllers\Backend\UsuarioController;
+use App\Http\Controllers\Backend\InventarioController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -83,6 +84,14 @@ Route::prefix('productos')->group(function () {
     Route::post('/eliminar_producto/{id}', [ProductoController::class, 'eliminar_producto'])->name('eliminar_producto');
 
 });
+
+Route::prefix('productos')->group(function () {
+    Route::get('/vistainventario', [InventarioController::class, 'vistainventario'])->name('vistainventario');
+    Route::get('/buscar_lotes', [InventarioController::class, 'buscar_lotes'])->name('buscar_lotes');
+
+
+});
+
 
 
 Route::prefix('proveedor')->group(function () {
