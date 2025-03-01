@@ -88,7 +88,8 @@ Route::prefix('productos')->group(function () {
 Route::prefix('productos')->group(function () {
     Route::get('/vistainventario', [InventarioController::class, 'vistainventario'])->name('vistainventario');
     Route::get('/buscar_lotes', [InventarioController::class, 'buscar_lotes'])->name('buscar_lotes');
-
+    Route::post('/agregar_stock', [InventarioController::class, 'agregar_stock'])->name('agregar_stock');
+    Route::post('/borrar_lote/{id}', [InventarioController::class, 'borrar_lote'])->name('borrar_lote');
 
 });
 
