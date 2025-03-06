@@ -10,16 +10,7 @@ class Producto extends Model
     use HasFactory;
     protected $table = 'productos';
 
-    protected $fillable = [
-        'nombre',
-        'concentracion',
-        'adicional',
-        'precio',
-        'id_lab',
-        'id_tip_prod',
-        'id_present',
-        'estado'
-    ];
+    protected $fillable = ['nombre', 'concentracion', 'adicional', 'precio', 'id_lab', 'id_tip_prod', 'id_present', 'estado'];
 
     public function laboratorio()
     {
@@ -41,5 +32,8 @@ class Producto extends Model
         return $this->hasMany(Lote::class, 'id_producto'); // Relación inversa con los lotes
     }
 
-
+    public function obtenerStock()
+    {
+        return Lote::where('id_producto', $this->id)->where('estado', 'Activo')->sum('cantidad_lote');
+    }
 }

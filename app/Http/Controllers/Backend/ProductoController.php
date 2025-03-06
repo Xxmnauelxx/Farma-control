@@ -114,7 +114,7 @@ class ProductoController extends Controller
                 'concentracion' => $producto->concentracion,
                 'adicional' => $producto->adicional,
                 'precio' => $producto->precio,
-                'stock' => $producto->stock,  // Asegúrate de que haya un campo de stock en el modelo
+                'stock' => $producto->obtenerStock() > 0 ? $producto->obtenerStock() : "Sin lotes",  // Asegúrate de que haya un campo de stock en el modelo
                 'laboratorio' => $producto->laboratorio->nombre,  // Accede al nombre del laboratorio
                 'tipo' => $producto->tipoProducto->nombre,  // Accede al nombre del tipo de producto
                 'presentacion' => $producto->presentacion->nombre,  // Accede al nombre de la presentación

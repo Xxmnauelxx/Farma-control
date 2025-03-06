@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Backend;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Lote;
+use App\Models\Producto;
 use Auth;
 use DB;
 use File;
@@ -172,4 +173,120 @@ class InventarioController extends Controller
         return response()->json($resultado ? 'borrado' : 'noborrado');
     }
 
+    public function lotes_riesgo()
+    {
+        // Obtener la fecha actual con la zona horaria de Managua
+        $fecha_actual = Carbon::now('America/Managua');
+
+        // Obtener los lotes que tienen vencimiento y están activos
+        $lotes = Lote::with(['producto', 'producto.laboratorio', 'producto.tipoProducto', 'producto.presentacion', 'compra.proveedor'])
+            ->where('estado', 'Activo') // Solo lotes activos
+            ->get();
+
+        // Inicializar el arreglo que almacenará los lotes en riesgo
+        $json = [];
+
+        // Iterar sobre cada lote
+        foreach ($lotes as $lote) {
+            // Verificar si el lote tiene fecha de vencimiento
+            if ($lote->vencimiento) {
+                // Convertir la fecha de vencimiento en un objeto Carbon
+                $vencimiento = Carbon::parse($lote->vencimiento);
+                // Calcular la diferencia entre la fecha actual y la fecha de vencimiento
+                $diferencia = $vencimiento->diff($fecha_actual);
+
+                // Obtener años, meses, días y horas de la diferencia
+                $anio = $diferencia->y;
+                $mes = $diferencia->m;
+                $dia = $diferencia->d;
+                $hora = $diferencia->h;
+
+                // Determinar si el lote ya venció (invert = 1 significa que la fecha de vencimiento es menor a la actual)
+                $verificado = $diferencia->invert;
+
+                // Establecer el estado por defecto
+                $estado = 'ligth';
+
+                // Cambiar el estado si el lote ya venció
+                if ($verificado == 0) {
+                    $estado = 'danger';
+                    $anio = $anio * -1;
+                    $mes = $mes * -1;
+                    $dia = $dia * -1;
+                    $hora = $hora * -1;
+                } elseif ($mes <= 3 && $anio == 0) {
+                    $estado = 'warning';
+                }
+
+                // Solo agregar los lotes con estado 'danger' o 'warning' al arreglo de resultados
+                if ($estado == 'danger' || $estado == 'warning') {
+                    $json[] = [
+                        'id' => $lote->id, // ID del lote
+                        'nombre' => $lote->producto->nombre, // Nombre del producto
+                        'concentracion' => $lote->producto->concentracion, // Concentración del producto
+                        'adicional' => $lote->producto->adicional, // Información adicional del producto
+                        'vencimiento' => $lote->vencimiento, // Fecha de vencimiento
+                        'proveedor' => $lote->compra->proveedor->nombre, // Nombre del proveedor
+                        'stock' => $lote->cantidad_lote, // Cantidad disponible en el lote
+                        'laboratorio' => $lote->producto->laboratorio->nombre, // Nombre del laboratorio
+                        'tipo' => $lote->producto->tipoProducto->nombre, // Tipo del producto
+                        'presentacion' => $lote->producto->presentacion->nombre, // Presentación del producto
+                        'avatar' => $lote->producto->avatar ? asset('storage/producto/' . $lote->producto->avatar) : asset('img/producto_default.jpeg'), // Imagen del producto
+                        'mes' => $mes, // Meses restantes o vencidos
+                        'dia' => $dia, // Días restantes o vencidos
+                        'hora' => $hora, // Horas restantes o vencidas
+                        'estado' => $estado, // Estado del lote (danger, warning, light)
+                        'invert' => $verificado, // Indica si el lote ya venció
+                    ];
+                }
+            }
+        }
+
+        // Retornar los lotes en formato JSON
+        return response()->json($json);
+    }
+
+    public function buscar_prod($id)
+    {
+        $producto = Producto::select('productos.id as id_productos',
+         'productos.nombre',
+         'productos.concentracion',
+         'productos.adicional',
+         'productos.precio',
+         'laboratorios.nombre as laboratorio',
+         'tipos_productos.nombre as tipo',
+         'presentaciones.nombre as presentacion',
+         'productos.avatar',
+         'productos.id_lab',
+         'productos.id_tip_prod',
+         'productos.id_present')
+         ->join('laboratorios', 'productos.id_lab', '=', 'laboratorios.id')
+         ->join('tipos_productos', 'productos.id_tip_prod', '=', 'tipos_productos.id')
+         ->join('presentaciones', 'productos.id_present', '=', 'presentaciones.id')
+         ->where('productos.id', $id)->first();
+
+        if (!$producto) {
+            return response()->json(['error' => 'Producto no encontrado'], 404);
+        }
+
+        // Obtener el stock del producto
+        $stock = $producto->obtenerStock($producto->id_productos);
+
+        // Formatear el JSON de respuesta
+        return response()->json([
+            'id' => $producto->id_productos,
+            'nombre' => $producto->nombre,
+            'concentracion' => $producto->concentracion,
+            'adicional' => $producto->adicional,
+            'precio' => $producto->precio,
+            'stock' => $stock,
+            'laboratorio' => $producto->laboratorio,
+            'tipo' => $producto->tipo,
+            'presentacion' => $producto->presentacion,
+            'laboratorio_id' => $producto->prod_lab,
+            'tipo_id' => $producto->prod_tip,
+            'presentacion_id' => $producto->prod_pre,
+            'avatar' => asset('img/producto/' . $producto->avatar),
+        ]);
+    }
 }

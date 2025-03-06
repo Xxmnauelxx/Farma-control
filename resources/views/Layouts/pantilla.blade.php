@@ -9,7 +9,7 @@
 <title>@yield('title') | Farmacia</title>
 
 @yield('css')
-<link rel="shortcut icon" href="{{ asset('img/HECRH.png') }}" type="image/x-icon" />
+<link rel="shortcut icon" href="{{ asset('img/logo.png') }}" type="image/x-icon" />
 <!-- Font Awesome -->
 <link rel="stylesheet" href="{{ asset('plugins/fontawesome-free/css/all.min.css') }}">
 <!-- Ionicons -->
@@ -23,6 +23,7 @@
 <link rel="stylesheet" href="{{ asset('dist/css/adminlte.min.css') }}">
 <link rel="stylesheet" href="{{ asset('plugins/summernote/summernote-bs5.min.css') }}">
 <link rel="stylesheet" href="{{ asset('css/font-awesome.css') }}">
+<link rel="stylesheet" href="{{ asset('css/carrito.css') }}">
 
 <!-- overlayScrollbars -->
 <link rel="stylesheet" href="{{ asset('plugins/overlayScrollbars/css/OverlayScrollbars.min.css') }}">
@@ -42,6 +43,12 @@
         background-color: #007bff !important;
         /* Cambia esto al color que prefieras */
         color: white !important;
+    }
+
+    .contador {
+        position: absolute;
+        top: 0px;
+        right: 3px;
     }
 </style>
 <script>
@@ -90,9 +97,36 @@
                         <i class="fas fa-bars"></i>
                     </a>
                 </li>
+
+                <li class="animate__animated animate__wobble nav-item dropdown" id="cat-carrito" style="display: none;">
+                    <img src="{{ asset('img/carrito.png') }}" class="imagen-carrito nav-link dropdown-toggle"
+                        href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-expanded="false">
+                    <span class="contador badge badge-danger" id="contador"></span>
+                    </img>
+                    <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                        <table class="carro table table-hover text-nowrap p-0">
+                            <thead class="table-success">
+                                <tr>
+                                    <th>Codigo</th>
+                                    <th>Nombre</th>
+                                    <th>Concentracion</th>
+                                    <th>Adicional</th>
+                                    <th>Precio</th>
+                                    <th>Eliminar</th>
+                                </tr>
+                            </thead>
+                            <tbody id="lista-carrito">
+
+                            </tbody>
+                        </table>
+                        <a href="#" id="procesar-pedido" class="btn btn-success btn-block">Confirmar Compra</a>
+                       <a href="#" id="vaciar-carrito" class="btn btn-danger btn-block">Vaciar Carrito</a>
+                    </ul>
+                </li>
             </ul>
 
             <ul class="navbar-nav ml-auto">
+
                 <li class="nav-item dropdown">
                     <a class="nav-link" data-toggle="dropdown" href="#">
                         <i class="far fa-clock nav-item m-1"></i>
@@ -115,8 +149,8 @@
                     <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
                         <!-- User image -->
                         <div class="dropdown-header text-center bg-primary">
-                            <img id="avatar4" src="{{ asset('img/logo.jpg') }}" class="img-circle" alt="User Image"
-                                style="width: 100px; height:150px;">
+                            <img id="avatar4" src="{{ asset('img/logo.jpg') }}" class="img-circle"
+                                alt="User Image" style="width: 100px; height:150px;">
                             <p>
                                 {{ $nombre }} <br>
                                 <small>Miembro desde Nov. 2021</small>
@@ -125,8 +159,7 @@
                         <!-- Menu Footer-->
                         <div class="dropdown-footer d-flex justify-content-between">
                             <a href="" class="btn btn-default btn-flat">Perfil</a>
-                            <a href="{{ route('logout') }}"
-                                class="btn btn-default btn-flat">Cerrar sesión</a>
+                            <a href="{{ route('logout') }}" class="btn btn-default btn-flat">Cerrar sesión</a>
                         </div>
 
                     </div>
@@ -138,7 +171,7 @@
 
         <aside class="main-sidebar sidebar-dark-primary elevation-4">
             <a href="{{ route('home') }}" class="brand-link">
-                <img src="{{ asset('img/logo.png') }}"  class="brand-image img-circle elevation-3"
+                <img src="{{ asset('img/logo.png') }}" class="brand-image img-circle elevation-3"
                     style="opacity: .8">
                 <span class="brand-text font-weight-light">Elvis Code</span>
             </a>
@@ -228,7 +261,7 @@
                         </li>
 
                         <li class="nav-item ">
-                            <a href="{{ route('vistaAtributos') }}" class="nav-link" >
+                            <a href="{{ route('vistaAtributos') }}" class="nav-link">
                                 <i class="nav-icon fas fa-vials"></i>
                                 <p>
                                     Atributos
@@ -249,7 +282,7 @@
                                 <li class="nav-item">
                                     <a href="{{ route('vistainventario') }}" class="nav-link">
                                         <i class="fas fa-solid fa-truck-moving  nav-icon"></i>
-                                        <p>Gestion Productos</p>
+                                        <p>Gestion Lotes</p>
                                     </a>
                                 </li>
                             </ul>

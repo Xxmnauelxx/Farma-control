@@ -8,6 +8,7 @@ use App\Http\Controllers\Backend\ProductoController;
 use App\Http\Controllers\Backend\ProveedorController;
 use App\Http\Controllers\Backend\UsuarioController;
 use App\Http\Controllers\Backend\InventarioController;
+use App\Http\Controllers\Backend\VentaController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -94,7 +95,6 @@ Route::prefix('productos')->group(function () {
 });
 
 
-
 Route::prefix('proveedor')->group(function () {
     Route::get('/vistaproveedor', [ProveedorController::class, 'vistaproveedor'])->name('vistaproveedor');
     Route::post('/crear_proveedor', [ProveedorController::class, 'crear_proveedor'])->name('crear_proveedor');
@@ -126,6 +126,18 @@ Route::prefix('compra')->group(function () {
     Route::post('cambiarEstado', [CompraController::class, 'cambiarEstado'])->name('cambiarEstado');
     Route::get('imprimir_compra/{id}', [CompraController::class, 'imprimir_compra'])->name('imprimir_compra');
 });
+
+
+Route::prefix('home')->group(function () {
+    Route::get('lotes_riesgo', [InventarioController::class, 'lotes_riesgo'])->name('lotes_riesgo');
+    Route::get('buscar_prod/{id}', [InventarioController::class, 'buscar_prod'])->name('buscar_prod');
+});
+
+Route::prefix('venta')->group(function () {
+    Route::get('proceso_compra', [VentaController::class, 'proceso_compra'])->name('proceso_compra');
+    Route::post('buscar_prod_compra', [VentaController::class, 'buscar_prod_compra'])->name('buscar_prod_compra');
+});
+
 
 
 
