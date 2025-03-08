@@ -136,6 +136,9 @@ Route::prefix('home')->group(function () {
 Route::prefix('venta')->group(function () {
     Route::get('proceso_compra', [VentaController::class, 'proceso_compra'])->name('proceso_compra');
     Route::post('buscar_prod_compra', [VentaController::class, 'buscar_prod_compra'])->name('buscar_prod_compra');
+    Route::post('veirificarStock', [VentaController::class, 'veirificarStock'])->name('veirificarStock');
+    Route::post('enviar_venta', [VentaController::class, 'enviar_venta'])->name('enviar_venta');
+    Route::get('generar_boucher/{id}', [VentaController::class, 'generar_boucher'])->name('generar_boucher');
 });
 
 

@@ -180,7 +180,9 @@ $(document).ready(function () {
 
     //2
     $(document).on("click", ".agregar-carrito", (e) => {
-        const elemento = $(this)[0].activeElement.parentElement.parentElement.parentElement.parentElement;
+        const elemento =
+            $(this)[0].activeElement.parentElement.parentElement.parentElement
+                .parentElement;
         console.log(elemento);
         const id = $(elemento).attr("prodId");
         const nombre = $(elemento).attr("prodNomb");
@@ -261,7 +263,7 @@ $(document).ready(function () {
     //7
     $(document).on("click", ".borrar-producto", (e) => {
         const elemento = $(this)[0].activeElement.parentElement.parentElement;
-        console.log(elemento)
+        console.log(elemento);
         const id = $(elemento).attr("prodId");
         elemento.remove();
         eliminar_producto_LS(id);
@@ -378,7 +380,9 @@ $(document).ready(function () {
                 headers: {
                     "Content-Type": "application/json",
                     Accept: "application/json", // Asegúrate de incluir esta línea
-                   "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr('content')
+                    "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr(
+                        "content"
+                    ),
                 },
                 body: JSON.stringify({
                     id: producto.id, // Solo mandamos el ID del producto
@@ -532,6 +536,96 @@ $(document).ready(function () {
     //11
     // procesar compra
     $(document).on("click", "#procesar-compra", (e) => {
-        procesar_compra();
+         procesar_compra();
     });
+
+    function procesar_compra() {
+        let clienteRegistrado = $("#cliente_registrado").val();
+        let clienteNoRegistrado = $("#cliente_no_registrado").val();
+
+        // Si ambos están vacíos, se envía la venta sin cliente
+        let clientereg = clienteRegistrado;
+        let clienteNore = clienteNoRegistrado;
+
+        if (RecuperarLS().length == 0) {
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "No hay productos, seleccione algunos",
+            }).then(() => {
+                location.href = home;
+            });
+        } else {
+            registrar_compra(clientereg, clienteNore);
+
+            Swal.fire({
+                position: 'top-end',
+                icon: 'success',
+                title: 'Se Realizo La Compra',
+                showConfirmButton: false,
+                timer: 1500
+            }).then(function() {
+                eliminarLS();
+            })
+        }
+    }
+
+    $.ajaxSetup({
+        headers: {
+            "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content"),
+        },
+    });
+
+    function registrar_compra(clientereg, clienteNore) {
+        let total = $("#total").text().trim();
+        let productos = RecuperarLS(); // Debe ser un array
+
+        let url = CrearVenta;
+
+        $.ajax({
+            url: url,
+            type: "POST",
+            data: {
+                total: total,
+                cliente: clientereg, // Solo uno de los dos
+                cliente1: clienteNore, // Solo uno de los dos
+                productos: productos, // Enviar como array, no como JSON string
+            },
+            dataType: "json", // Asegura que el servidor reciba JSON correctamente
+            success: function (response) {
+                console.log(response);
+
+                if (response.id) {
+                    eliminarLS(); // Primero limpiar el LocalStorage
+                    generarBoucher(response.id);
+                }
+
+            },
+            error: function (xhr, status, error) {
+                console.error("Error en la venta:", error);
+                console.error("Estado:", status);
+                console.error("Respuesta del servidor:", xhr.responseText);
+
+                Swal.fire({
+                    icon: "error",
+                    title: "Error",
+                    text: "Hubo un problema al registrar la venta.",
+                });
+            },
+        });
+    }
+
+
+    function generarBoucher(id) {
+        let urlBoucher = generarBoucherURL.replace("__ID__", id);
+
+        // Abrir el PDF en una nueva pestaña
+        let nuevaVentana = window.open(urlBoucher, '_blank');
+
+        // Esperar 3 segundos y redirigir al home
+        setTimeout(function() {
+            window.location.href = home; // Cambia esto por la ruta correcta de tu home location.href = home;
+        }, 1000);
+    }
+
 });

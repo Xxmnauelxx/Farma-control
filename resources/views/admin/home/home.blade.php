@@ -296,6 +296,9 @@
         var rutaBuscarProdCompra = "{{ route('proceso_compra') }}";
         var rutaProdCompra = "{{ route('buscar_prod', ['id' => ':id']) }}";
         var rutaProdComprabuscar = "{{ route('buscar_prod_compra') }}";
+        
+        var home = "{{ route('home') }}";
+        var CrearVenta = "{{ route('enviar_venta') }}";
     </script>
 
     <script src="{{ asset('js/carrito.js') }}"></script>

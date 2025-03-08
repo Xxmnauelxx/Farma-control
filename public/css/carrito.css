@@ -114,6 +114,24 @@
     text-decoration: underline;
 }
 
+/*TABLA DE compra*/
+
+.compra * {
+    position: relative;
+}
+
+
+/*encabezado morado*/
+
+.compra thead tr {
+    height: 60px;
+    background: #9B9B9B;
+}
+
+
+/*encabezado producto blancas*/
+
+
 @media screen and (max-width: 900px) {
     .datos_cp input {
         margin-left: 10px;

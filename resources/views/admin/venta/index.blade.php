@@ -38,11 +38,26 @@
                             <header class="text-center mb-3">
                                 <!-- Datos -->
                                 <div class="datos_cp">
-                                    <!-- Cliente -->
+                                    <!-- Cliente Registrado -->
                                     <div class="form-group row">
-                                        <label for="cliente" class="col-form-label col-md-2">Cliente: </label>
+                                        <label for="cliente_registrado" class="col-form-label col-md-2">Cliente:</label>
                                         <div class="col-md-10">
-                                            <select id="cliente" class="form-control select2" style="width:100%"></select>
+                                            <select id="cliente_registrado" class="form-control select2" style="width:100%">
+                                                <option value="">Seleccione un cliente</option>
+                                                @foreach ($cliente as $cliente)
+                                                    <option value="{{ $cliente->id }}">{{ $cliente->nombre }}</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <!-- Cliente No Registrado -->
+                                    <div class="form-group row">
+                                        <label for="cliente_no_registrado" class="col-form-label col-md-2">Cliente No
+                                            Registrado:</label>
+                                        <div class="col-md-10">
+                                            <input type="text" class="form-control" id="cliente_no_registrado"
+                                                placeholder="Nombre del Cliente">
                                         </div>
                                     </div>
 
@@ -50,8 +65,8 @@
                                     <div class="form-group row">
                                         <label for="vendedor" class="col-form-label col-md-2">Vendedor: </label>
                                         <div class="col-md-10">
-                                            <input type="text" class="form-control" id="vendedor" value="{{ $nombre }}"
-                                                readonly>
+                                            <input type="text" class="form-control" id="vendedor"
+                                                value="{{ $nombre }}" readonly>
                                         </div>
                                     </div>
                                 </div>
@@ -59,21 +74,20 @@
 
                             <button class="btn btn-success mb-2" id="act">Actualizar</button>
 
-                            <div id="cp" class="card-body table-responsive">
+                            <div id="cp" class="card-body table-responsive p-0">
                                 <table class="compra display table table-hover text-nowrap " id="tablacompra">
                                     <thead class="table-success">
                                         <tr>
-                                            <th>Nombre</th>
-                                            <th>Stock</th>
-                                            <th>Precio</th>
-                                            <th>Concentración</th>
-                                            <th>Adicional</th>
-                                            <th>Laboratorio</th>
-                                            <th>Presentación</th>
-                                            <th>Cantidad</th>
-                                            <th>Sub Total</th>
-                                            <th>Eliminar</th>
-                                        </tr>
+                                            <th scope="col">Nombre</th>
+                                            <th scope="col">Stock</th>
+                                            <th scope="col">Precio</th>
+                                            <th scope="col">Concent</th>
+                                            <th scope="col">Adicional</th>
+                                            <th scope="col">Lab</th>
+                                            <th scope="col">Pres</th>
+                                            <th scope="col">Cantidad</th>
+                                            <th scope="col">Sub Total</th>
+                                            <th scope="col">Eliminar</th>
                                     </thead>
                                     <tbody id="listacompra" class="table-active">
                                         <!-- Aquí se cargarán las filas dinámicamente -->
@@ -125,7 +139,8 @@
                                             </div>
                                             <div class="card-body">
                                                 <div class="info-box mb-3 bg-danger">
-                                                    <span class="info-box-icon"><i class="fas fa-comment-dollar"></i></span>
+                                                    <span class="info-box-icon"><i
+                                                            class="fas fa-comment-dollar"></i></span>
                                                     <div class="info-box-content">
                                                         <span class="info-box-text text-left ">DESCUENTO</span>
                                                         <input id="descuento"type="number" min="1"
@@ -133,7 +148,8 @@
                                                     </div>
                                                 </div>
                                                 <div class="info-box mb-3 bg-info">
-                                                    <span class="info-box-icon"><i class="ion ion-ios-cart-outline"></i></span>
+                                                    <span class="info-box-icon"><i
+                                                            class="ion ion-ios-cart-outline"></i></span>
                                                     <div class="info-box-content">
                                                         <span class="info-box-text text-left ">TOTAL</span>
                                                         <span class="info-box-number" id="total">12</span>
@@ -152,7 +168,8 @@
                                             </div>
                                             <div class="card-body">
                                                 <div class="info-box mb-3 bg-success">
-                                                    <span class="info-box-icon"><i class="fas fa-money-bill-alt"></i></span>
+                                                    <span class="info-box-icon"><i
+                                                            class="fas fa-money-bill-alt"></i></span>
                                                     <div class="info-box-content">
                                                         <span class="info-box-text text-left ">INGRESO</span>
                                                         <input type="number" id="pago" min="1"
@@ -161,7 +178,8 @@
                                                     </div>
                                                 </div>
                                                 <div class="info-box mb-3 bg-info">
-                                                    <span class="info-box-icon"><i class="fas fa-money-bill-wave"></i></span>
+                                                    <span class="info-box-icon"><i
+                                                            class="fas fa-money-bill-wave"></i></span>
                                                     <div class="info-box-content">
                                                         <span class="info-box-text text-left ">VUELTO</span>
                                                         <span class="info-box-number" id="vuelto">3</span>
@@ -208,6 +226,9 @@
         var rutaBuscarProdCompra = "{{ route('proceso_compra') }}";
         var rutaProdCompra = "{{ route('buscar_prod', ['id' => ':id']) }}";
         var rutaProdComprabuscar = "{{ route('buscar_prod_compra') }}";
+        var home = "{{ route('home') }}";
+        var CrearVenta = "{{ route('enviar_venta') }}";
+        var generarBoucherURL = "{{ route('generar_boucher', ['id' => '__ID__']) }}";
     </script>
 
     <script src="{{ asset('js/carrito.js') }}"></script>
