@@ -97,7 +97,7 @@
                         <i class="fas fa-bars"></i>
                     </a>
                 </li>
-
+                {{-- proceso de carrito para la venta --}}
                 <li class="animate__animated animate__wobble nav-item dropdown" id="cat-carrito" style="display: none;">
                     <img src="{{ asset('img/carrito.png') }}" class="imagen-carrito nav-link dropdown-toggle"
                         href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-expanded="false">
@@ -328,6 +328,26 @@
                                 </li>
                             </ul>
 
+                        </li>
+
+                        <li class="animate__animated animate__jackInTheBox nav-header">Gestion Ventas</li>
+                        <li class="nav-item ">
+                            <a href="#" class="nav-link">
+                                <i class="nav-icon fas fa-shopping-cart"></i>
+                                <p>
+                                    Lista Ventas
+                                    <i class="fas fa-angle-left right"></i>
+                                </p>
+                            </a>
+
+                            <ul class="nav nav-treeview">
+                                <li class="nav-item">
+                                    <a href="{{ route('vistaVentas') }}" class="nav-link">
+                                        <i class="far fa-money-bill-alt  nav-icon"></i>
+                                        <p>Ver Ventas</p>
+                                    </a>
+                                </li>
+                            </ul>
                         </li>
                     </ul>
                 </nav>

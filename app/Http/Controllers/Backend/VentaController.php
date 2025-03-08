@@ -169,11 +169,11 @@ class VentaController extends Controller
             return $producto->precio * $producto->cantidad;
         });
 
-          // Obtener la fecha actual para el footer
-    $fechaImpresion = now()->format('d/m/Y H:i:s');
+        // Obtener la fecha actual para el footer
+        $fechaImpresion = now()->format('d/m/Y H:i:s');
 
-    // Obtener el usuario autenticado
-    $usuarioGenerador = auth()->user()->name;
+        // Obtener el usuario autenticado
+        $usuarioGenerador = auth()->user()->name;
 
         // Preparar los datos para el boucher
         $datosBoucher = [
@@ -185,8 +185,8 @@ class VentaController extends Controller
             'nombre_negocio' => 'Supermercado XYZ',
             'direccion_negocio' => 'Calle Ficticia, Ciudad',
             'telefono_negocio' => '123-456-789',
-            'fecha_impresion' => $fechaImpresion,  // Fecha de impresión
-        'usuario_generador' => $usuarioGenerador,  // Usuario que generó la venta
+            'fecha_impresion' => $fechaImpresion, // Fecha de impresión
+            'usuario_generador' => $usuarioGenerador, // Usuario que generó la venta
         ];
 
         // Configurar Dompdf
@@ -214,6 +214,63 @@ class VentaController extends Controller
 
         return $dompdf->stream('boucher_venta_.pdf', [
             'Attachment' => 0, // Esto asegura que el PDF se abre en el navegador y no se descarga
+        ]);
+    }
+
+    public function vistaVentas(Request $request)
+    {
+        // Verifica si el usuario está autenticado
+        if (Auth::check()) {
+            // Obtiene información del usuario autenticado
+            $usuario = Auth::user();
+            $nombre = $usuario->name;
+            $tipo = $usuario->tipo->nombre;
+        }
+
+        // Devuelve la vista para mostrar los productos, pasando datos como el usuario y los registros adicionales
+        return view('admin.venta.listaventa', compact('usuario', 'nombre', 'tipo'));
+    }
+
+    public function ver_consulta(Request $request)
+    {
+        // Suponiendo que el id_usuario es proporcionado en la sesión o es parte de la solicitud
+        $id_usuario = auth()->id(); // o puedes usar cualquier otro método para obtener el id_usuario
+
+        // Realizar las consultas en la base de datos
+        $venta_dia_vendedor = DB::table('venta')
+            ->where('vendedor', $id_usuario)
+            ->whereDate('created_at', today()) // Cambiar 'fecha' por 'created_at'
+            ->sum('total');
+
+        $venta_diaria = DB::table('venta')
+            ->whereDate('created_at', today()) // Cambiar 'fecha' por 'created_at'
+            ->sum('total');
+
+        $venta_mensual = DB::table('venta')
+            ->whereYear('created_at', date('Y')) // Cambiar 'fecha' por 'created_at'
+            ->whereMonth('created_at', date('m')) // Cambiar 'fecha' por 'created_at'
+            ->sum('total');
+
+        $venta_anual = DB::table('venta')
+            ->whereYear('created_at', date('Y')) // Cambiar 'fecha' por 'created_at'
+            ->sum('total');
+
+        $costo_mensual = DB::table('detalle_venta')
+            ->join('venta', 'detalle_venta.id_det_venta', '=', 'venta.id')
+            ->join('lote', 'detalle_venta.id_det_lote', '=', 'lote.id')
+            ->whereYear('venta.created_at', date('Y')) // Especificar la tabla 'venta'
+            ->whereMonth('venta.created_at', date('m')) // Especificar la tabla 'venta'
+            ->sum(DB::raw('det_cantidad * precio_compra'));
+
+        $ganancia_mensual = $venta_mensual - $costo_mensual;
+
+        // Devolver los resultados en formato JSON
+        return response()->json([
+            'venta_dia_vendedor' => $venta_dia_vendedor,
+            'venta_diaria' => $venta_diaria,
+            'venta_mensual' => $venta_mensual,
+            'venta_anual' => $venta_anual,
+            'ganancia_mensual' => $ganancia_mensual,
         ]);
     }
 }
