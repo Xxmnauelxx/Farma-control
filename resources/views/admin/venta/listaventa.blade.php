@@ -1,5 +1,5 @@
 @extends('Layouts.pantilla')
-@section('title', 'Cliente')
+@section('title', 'Ventas')
 @section('css')
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -23,7 +23,9 @@
         <div class="container-fluid">
             <div class="row mb-2">
                 <div class="col-sm-6">
-                    <h1 class="animate__animated animate__shakeY">Gestion Venta</h1>
+                    <h1 class="animate__animated animate__shakeY">
+                        <i class="fas fa-coins"> Movimientos</i>
+                    </h1>
                 </div>
                 <div class="col-sm-6">
                     <ol class="breadcrumb float-sm-right">
@@ -39,7 +41,7 @@
         <div class="container-fluid">
             <div class="card card-primary">
                 <div class="card-header">
-                    <h3 class="card-title">Consultas</h3>
+                    <h3 class="card-title">Informes</h3>
                 </div>
                 <div class="animate__animated  animate__fadeInDown card-body table-responsive">
                     <div class="row">
@@ -84,7 +86,6 @@
                             </a>
                         </div>
 
-
                         <div class="col-md-3 col-sm-6 col-12">
                             <a href="tu_enlace_aqui.php" class="info-box-link">
                                 <div class="info-box">
@@ -100,7 +101,6 @@
                             </a>
                         </div>
 
-
                         <div class="col-md-3 col-sm-6 col-12">
                             <a href="tu_enlace_aqui.php" class="info-box-link">
                                 <div class="info-box">
@@ -115,10 +115,6 @@
                                 </div>
                             </a>
                         </div>
-
-
-
-
                     </div>
                 </div>
                 <div class="card-footer">
@@ -132,17 +128,18 @@
         <div class="container-fluid">
             <div class="card card-primary">
                 <div class="card-header">
-                    <h3 class="card-title">Buscar Venta</h3>
+                    <h3 class="card-title">Listas de Venta Realizadas</h3>
 
                 </div>
                 <div class="card-body table-responsive">
-                    <table id="tabla_venta" class="display table table-hover text-nowrap" style="width:100%">
+                    <table id="tabla_venta" class="display table  table-striped" style="width:100%">
                         <thead>
                             <tr>
+                                <th>#</th>
                                 <th>Codigo</th>
                                 <th>Fecha</th>
                                 <th>Cliente</th>
-                                <th>DNI</th>
+                                <th>Indent</th>
                                 <th>Total</th>
                                 <th>Vendedor</th>
                                 <th>Accion</th>
@@ -173,22 +170,103 @@
     <script>
         $(document).ready(function() {
             mostrar_consulta();
+            listar_ventas();
+            var datatable;
+
             function mostrar_consulta() {
-               var url = "{{ route('ver_consulta') }}";
+                var url = "{{ route('ver_consulta') }}";
                 $.post(url, {
                     _token: '{{ csrf_token() }}'
                 }, (response) => {
                     console.log(response);
 
                     if (typeof response === 'object') {
-                    $('#venta_dia_vendedor').html((response.venta_dia_vendedor * 1).toFixed(2));
-                    $('#venta_diaria').html((response.venta_diaria * 1).toFixed(2));
-                    $('#venta_mensual').html((response.venta_mensual * 1).toFixed(2));
-                    $('#venta_anual').html((response.venta_anual * 1).toFixed(2));
-                    $('#ganancia_mensual').html((response.ganancia_mensual * 1).toFixed(2));
-                }
+                        $('#venta_dia_vendedor').html((response.venta_dia_vendedor * 1).toFixed(2));
+                        $('#venta_diaria').html((response.venta_diaria * 1).toFixed(2));
+                        $('#venta_mensual').html((response.venta_mensual * 1).toFixed(2));
+                        $('#venta_anual').html((response.venta_anual * 1).toFixed(2));
+                        $('#ganancia_mensual').html((response.ganancia_mensual * 1).toFixed(2));
+                    }
                 });
             }
+
+            function listar_ventas() {
+                var url = "{{ route('listar_ventas') }}";
+
+                // Inicializar DataTable
+                datatable = $('#tabla_venta').DataTable({
+                    "ajax": {
+                        "url": url,
+                        "method": "POST",
+                        "data": function(d) {
+                            d._token = "{{ csrf_token() }}"; // Enviar CSRF token
+                        },
+                        "dataSrc": function(json) {
+                            if (!json.data) {
+                                console.error("Error: La respuesta no contiene la propiedad 'data'.",
+                                    json);
+                                return [];
+                            }
+                            return json.data;
+                        }
+                    },
+                    "columns": [{
+                            // Columna de números de fila
+                            "render": function(data, type, row, meta) {
+                                return meta.row +
+                                1; // Esto devuelve el índice de la fila + 1 (para que empiece desde 1)
+                            },
+                            "className": "text-center"
+                        },
+                        {
+                            "data": "codigo",
+                            "className": "text-center", // Centrar el código
+
+                        }, // Columna para el código (debe ser 'codigo' en el JSON)
+                        {
+                            "data": "fecha",
+                            "render": function(data, type, row) {
+                                // Formatear la fecha a 'YYYY-MM-DD'
+                                if (data) {
+                                    var date = new Date(data);
+                                    var formattedDate = date.toISOString().split('T')[
+                                        0]; // Extrae solo la fecha
+                                    return formattedDate;
+                                }
+                                return ''; // Si no hay fecha, retorna una cadena vacía
+                            }
+                        }, // Columna para la fecha
+                        {
+                            "data": "cliente"
+                        }, // Columna para el nombre del cliente
+                        {
+                            "data": "dni"
+                        }, // Columna para el DNI del cliente
+                        {
+                            "data": "total",
+                            "className": "text-center" // Centrar el código
+                        }, // Columna para el total
+                        {
+                            "data": "vendedor"
+                        }, // Columna para el nombre del vendedor
+                        {
+                            "defaultContent": `
+                    <button class="imprimir btn btn-success">
+                        <i class="fas fa-print"></i>
+                    </button>
+                    <button class="ver btn btn-primary" type="button" data-toggle="modal" data-target="#vista_venta">
+                        <i class="fas fa-search"></i>
+                    </button>
+                    <button class="borrar btn btn-danger">
+                        <i class="fas fa-window-close"></i>
+                    </button>`
+                        } // Columna para los botones de acción (Imprimir, Ver, Borrar)
+                    ],
+                    "destroy": true
+                });
+            }
+
+
 
         });
     </script>

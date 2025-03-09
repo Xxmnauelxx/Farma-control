@@ -273,4 +273,31 @@ class VentaController extends Controller
             'ganancia_mensual' => $ganancia_mensual,
         ]);
     }
+
+    public function listar_ventas(Request $request)
+    {
+        // Obtener las ventas desde la base de datos
+        $ventas = Venta::with('cliente', 'usuario') // Asegúrate de que 'cliente' y 'usuario' están definidos correctamente
+            ->select('id', 'created_at', 'total', 'vendedor', 'id_cliente')
+            ->get();
+
+        $data = [];
+        foreach ($ventas as $venta) {
+            // Procesar cada venta para obtener los datos del cliente y vendedor
+            $cliente = $venta->cliente ? $venta->cliente->nombre . ' ' . $venta->cliente->apellidos : 'Sin Cliente';
+            $dni = $venta->cliente ? $venta->cliente->dni : 'Sin DNI';
+            $vendedor = $venta->usuario ? $venta->usuario->nombre_us . ' ' . $venta->usuario->apellidos_us : 'Sin Vendedor';
+
+            $data[] = [
+                'codigo' => $venta->id,
+                'fecha' => $venta->created_at,
+                'cliente' => $cliente,
+                'dni' => $dni,
+                'total' => $venta->total,
+                'vendedor' => $venta->usuario->name,
+            ];
+        }
+
+        return response()->json(['data' => $data]);
+    }
 }

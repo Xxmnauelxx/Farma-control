@@ -141,6 +141,7 @@ Route::prefix('venta')->group(function () {
     Route::get('generar_boucher/{id}', [VentaController::class, 'generar_boucher'])->name('generar_boucher');
     Route::get('vistaVentas', [VentaController::class, 'vistaVentas'])->name('vistaVentas');
     Route::post('ver_consulta', [VentaController::class, 'ver_consulta'])->name('ver_consulta');
+    Route::post('listar_ventas', [VentaController::class, 'listar_ventas'])->name('listar_ventas');
 });
 
 
