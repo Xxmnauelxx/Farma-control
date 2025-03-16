@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: localhost:3306
--- Tiempo de generación: 20-02-2025 a las 01:02:51
+-- Tiempo de generación: 09-03-2025 a las 00:37:48
 -- Versión del servidor: 8.0.30
--- Versión de PHP: 8.1.31
+-- Versión de PHP: 8.1.10
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -48,8 +48,9 @@ CREATE TABLE `clientes` (
 --
 
 INSERT INTO `clientes` (`id`, `nombre`, `apellidos`, `dni`, `edad`, `telefono`, `correo`, `direccion`, `created_at`, `updated_at`, `sexo_id`, `avatar`, `estado`) VALUES
-(1, 'Elvis Jose', 'Pavón Zeas', '046140593000H', '1993-05-14', '86479297', 'qemesulocu@mailinator.com', 'Carazo\r\nCarazo', '2025-02-07 23:47:41', '2025-02-12 00:13:33', 1, 'storage/proveedor/QWxaGFFgNpsSADaQQTD2Qg99dF0hGlQozBve0vTv.jpg', 'Activo'),
-(2, 'Dolorem aspernatur b', 'Dicta omnis ut ad au', '54', '2002-03-02', '52', 'nyludu@mailinator.com', 'Maiores molestiae au', '2025-02-08 00:02:03', '2025-02-12 00:17:28', 2, 'storage/proveedor/Azi4BeqsMBDEYEsr8p9YAze558bmkI21W24sDoXp.jpg', 'Activo');
+(1, 'Elvis Jose', 'Pavón Zeas', '046140593000H', '1993-05-14', '86479297', 'qemesulocu@mailinator.com', 'Carazo\r\nCarazo', '2025-02-07 23:47:41', '2025-03-01 17:11:04', 1, 'storage/proveedor/p9Z2Mz8w1NmesX32UEtb3VsmYqdXuPhDoWgrBYqM.jpg', 'Activo'),
+(2, 'Diana Beattiz ', 'Ramos', '54', '2002-03-02', '52', 'nyludu@mailinator.com', 'Maiores molestiae au', '2025-02-08 00:02:03', '2025-02-12 00:17:28', 2, 'storage/proveedor/Azi4BeqsMBDEYEsr8p9YAze558bmkI21W24sDoXp.jpg', 'Activo'),
+(3, 'Magaly del Socorro', 'Martinez Zeledon', '21545465414', '1995-08-17', '86479297', 'magal7@gmail.com', 'Carazo\r\nCarazo', '2025-03-09 00:32:17', '2025-03-09 00:32:17', 2, NULL, 'Activo');
 
 -- --------------------------------------------------------
 
@@ -74,8 +75,11 @@ CREATE TABLE `compras` (
 --
 
 INSERT INTO `compras` (`id`, `codigo`, `fecha_compra`, `fecha_entrega`, `total`, `id_estado_pago`, `id_proveedor`, `updated_at`, `created_at`) VALUES
-(5, '0120', '2002-01-20', '2025-07-01', 35, 1, 1, '2025-02-15 19:38:36', '2025-02-16 01:38:36'),
-(6, '852445', '2020-12-22', '1973-12-25', 64, 2, 1, '2025-02-15 19:43:09', '2025-02-16 01:43:09');
+(10, '21212M', '2025-02-28', '2025-03-28', 50, 2, 1, '2025-02-28 18:56:46', '2025-03-01 00:56:46'),
+(11, '2102', '2025-02-28', '2025-03-28', 60, 2, 2, '2025-02-28 19:26:29', '2025-03-01 01:26:29'),
+(13, '2351', '2025-03-08', '2025-03-30', 150, 2, 1, '2025-03-08 17:58:39', '2025-03-08 23:58:39'),
+(14, '32526', '2025-03-08', '2025-03-18', 120, 2, 1, '2025-03-08 18:00:38', '2025-03-09 00:00:38'),
+(15, '468', '2025-03-08', '2025-03-26', 60, 2, 1, '2025-03-08 18:02:54', '2025-03-09 00:02:54');
 
 -- --------------------------------------------------------
 
@@ -90,8 +94,24 @@ CREATE TABLE `detalle_venta` (
   `id_det_lote` int NOT NULL,
   `id_det_prod` int NOT NULL,
   `lote_id_prov` int NOT NULL,
-  `id_det_venta` int NOT NULL
+  `id_det_venta` int NOT NULL,
+  `updated_at` datetime NOT NULL,
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+
+--
+-- Volcado de datos para la tabla `detalle_venta`
+--
+
+INSERT INTO `detalle_venta` (`id`, `det_cantidad`, `det_vencimiento`, `id_det_lote`, `id_det_prod`, `lote_id_prov`, `id_det_venta`, `updated_at`, `created_at`) VALUES
+(1, 5, '2025-09-28', 11, 12, 2, 1, '2025-03-08 18:17:04', '2025-03-08 18:17:04'),
+(2, 10, '2025-05-23', 14, 15, 1, 1, '2025-03-08 18:17:04', '2025-03-08 18:17:04'),
+(3, 5, '2025-05-28', 10, 10, 1, 1, '2025-03-08 18:17:04', '2025-03-08 18:17:04'),
+(4, 20, '2025-09-28', 11, 12, 2, 2, '2025-03-08 18:18:22', '2025-03-08 18:18:22'),
+(5, 15, '2025-05-28', 10, 10, 1, 2, '2025-03-08 18:18:22', '2025-03-08 18:18:22'),
+(6, 2, '2025-09-28', 11, 12, 2, 3, '2025-03-08 18:19:15', '2025-03-08 18:19:15'),
+(7, 50, '2025-05-23', 14, 15, 1, 3, '2025-03-08 18:19:15', '2025-03-08 18:19:15'),
+(8, 10, '2025-05-23', 14, 15, 1, 4, '2025-03-08 18:29:00', '2025-03-08 18:29:00');
 
 -- --------------------------------------------------------
 
@@ -153,10 +173,12 @@ CREATE TABLE `lote` (
   `id` int NOT NULL,
   `codigo` varchar(100) NOT NULL,
   `cantidad` int NOT NULL,
+  `cantidad_lote` int NOT NULL,
   `vencimiento` date NOT NULL,
   `precio_compra` int NOT NULL,
   `id_compra` int NOT NULL,
   `id_producto` int NOT NULL,
+  `estado` varchar(100) NOT NULL DEFAULT 'Activo',
   `updated_at` datetime NOT NULL,
   `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
@@ -165,12 +187,13 @@ CREATE TABLE `lote` (
 -- Volcado de datos para la tabla `lote`
 --
 
-INSERT INTO `lote` (`id`, `codigo`, `cantidad`, `vencimiento`, `precio_compra`, `id_compra`, `id_producto`, `updated_at`, `created_at`) VALUES
-(2, 'Cum qui voluptas eni', 69, '2001-05-13', 41, 5, 11, '2025-02-15 19:38:36', '2025-02-16 01:38:36'),
-(3, 'Rerum tempor quo iur', 90, '1984-01-28', 50, 5, 10, '2025-02-15 19:38:36', '2025-02-16 01:38:36'),
-(4, 'Porro duis corporis ', 57, '1997-03-11', 36, 6, 14, '2025-02-15 19:43:09', '2025-02-16 01:43:09'),
-(5, 'Temporibus veritatis', 47, '2010-03-09', 90, 6, 11, '2025-02-15 19:43:09', '2025-02-16 01:43:09'),
-(6, 'Mollit aut repellend', 83, '1997-11-22', 99, 6, 13, '2025-02-15 19:43:09', '2025-02-16 01:43:09');
+INSERT INTO `lote` (`id`, `codigo`, `cantidad`, `cantidad_lote`, `vencimiento`, `precio_compra`, `id_compra`, `id_producto`, `estado`, `updated_at`, `created_at`) VALUES
+(9, '534', 20, 0, '2025-02-28', 30, 10, 12, 'Inactivo', '2025-03-08 16:55:01', '2025-03-01 00:56:46'),
+(10, '212', 15, 15, '2025-05-28', 35, 10, 10, 'Activo', '2025-03-08 18:18:22', '2025-03-01 00:56:46'),
+(11, '2320235', 25, 23, '2025-09-28', 50, 11, 12, 'Activo', '2025-03-08 18:19:15', '2025-03-01 01:26:29'),
+(13, '032302', 1, 1, '2025-08-23', 65, 13, 15, 'Activo', '2025-03-08 17:58:39', '2025-03-08 23:58:39'),
+(14, '5313', 120, 41, '2025-05-23', 70, 14, 15, 'Activo', '2025-03-08 18:29:00', '2025-03-09 00:00:38'),
+(15, '562', 51, 0, '2025-03-07', 80, 15, 15, 'Inactivo', '2025-03-08 18:04:04', '2025-03-09 00:02:54');
 
 -- --------------------------------------------------------
 
@@ -247,8 +270,8 @@ INSERT INTO `productos` (`id`, `nombre`, `concentracion`, `adicional`, `precio`,
 (11, 'Perspiciatis quod d', 'Et explicabo Deleni', 'Id ullam assumenda p', 14, 6, 2, 2, 'Activo', '1735766990.jpeg', '2025-01-01 15:29:50', '2024-12-30 18:49:42'),
 (12, 'Acetominofen', '500mg', 'Fiebre', 30, 7, 2, 2, 'Activo', '1735782527.jpg', '2025-01-02 17:37:23', '2024-12-31 16:35:32'),
 (13, 'Acetominofen', '500mg', 'Para la fiebre', 30, 3, 2, 1, 'Activo', '1735782547.jpeg', '2025-01-01 19:49:07', '2024-12-31 16:36:07'),
-(14, 'Necessitatibus saepe', 'Aut qui sit archite', 'Id reprehenderit p', 45, 5, 1, 4, 'Activo', NULL, '2025-01-01 19:50:10', '2025-01-01 19:50:10'),
-(15, 'Necessitatibus saepe', 'Aut qui sit archite', 'Id reprehenderit p', 45, 4, 1, 4, 'Activo', NULL, '2025-01-01 19:50:37', '2025-01-01 19:50:37'),
+(14, 'Ibuprofeno', '600 mg', 'Dolor', 45, 5, 1, 1, 'Activo', NULL, '2025-03-08 17:56:58', '2025-01-01 19:50:10'),
+(15, 'Menaxol', '600 mg', 'Mocos', 60, 4, 1, 3, 'Activo', NULL, '2025-03-08 17:57:32', '2025-01-01 19:50:37'),
 (16, 'Animi a voluptatem', 'Voluptatem dolor ips', 'Aute omnis est dolo', 81, 9, 2, 3, 'Inactivo', NULL, '2025-01-02 17:38:02', '2025-01-02 17:38:02');
 
 -- --------------------------------------------------------
@@ -274,8 +297,9 @@ CREATE TABLE `proveedores` (
 --
 
 INSERT INTO `proveedores` (`id`, `nombre`, `telefono`, `correo`, `direccion`, `estado`, `avatar`, `updated_at`, `created_at`) VALUES
-(1, 'elvis pavon zeas', 285415, 'lejune@mailinator.com', 'Soluta qui velit ex', 'Activo', 'storage/proveedor/wW1izAB0ixEQGrE6rr3kxARvmQau2ftypR7hi4OM.jpg', '2025-02-05 18:27:10', '2025-01-03 18:55:37'),
-(2, 'prueba', 32, 'zeaselvis7@gmail.com', 'Carazo', 'Activo', 'storage/proveedor/9BfE3F6qbjLOs5wH3wBU1rgpva3JzxHz098ztc6O.png', '2025-02-05 18:38:00', '2025-01-03 18:55:54');
+(1, 'elvis pavon zeas', 285415, 'lejune@mailinator.com', 'Soluta qui velit ex', 'Activo', 'storage/proveedor/PHJskrct2PllFqTBBKuAKlzVZbwCmhfcrZLQHe6q.jpg', '2025-03-08 18:30:11', '2025-01-03 18:55:37'),
+(2, 'Alexander Muñoz', 325654, 'zeaselvis7@gmail.com', 'Carazo', 'Activo', 'storage/proveedor/9BfE3F6qbjLOs5wH3wBU1rgpva3JzxHz098ztc6O.png', '2025-03-08 18:32:59', '2025-01-03 18:55:54'),
+(3, 'Jose Antonio Perez', 5824216, 'Juan@gmail.com', 'Carazo', 'Activo', NULL, '2025-03-08 18:31:02', '2025-03-08 18:31:02');
 
 -- --------------------------------------------------------
 
@@ -369,8 +393,9 @@ INSERT INTO `users` (`id`, `name`, `avatar`, `email`, `email_verified_at`, `pass
 (2, 'Grethel del carmen Treminio Gonzalez', '', 'docente@gmail.com', NULL, '$2y$10$oBa/EpxJw.0Zfpu74by2Iu/NHkR/YwQNaf3EnLxlvFhBXYZRnrbsm', 2, 'Inactivo', NULL, '2024-06-28 13:27:26', '2024-10-14 23:48:29'),
 (3, 'Manuel Maglevi Borge Rubios', '', 'ucmejb19@gmail.com', NULL, '$2y$10$bOCEiGzffReQAWE6lb4a2Oa6CnI6Z7Hu9C.WqeQbJtt1Y.swibQAm', 3, 'Inactivo', NULL, '2024-06-28 13:27:57', '2024-10-14 23:48:26'),
 (7, 'Elvis José Pavón Zeas', '1728947793.jpg', 'zeaselvis7@gmail.com', NULL, '$2y$10$/8kxVLn93oKE5yx8vHmG/.pxZFlMP.JEHvKzgXTtdg6o0Cg6cCP/i', 1, 'Activo', NULL, '2024-10-08 00:50:41', '2024-10-14 23:16:33'),
-(8, 'prueba', '1728949791.png', 'prueba@gmail.com', NULL, '$2y$10$dVLZfCKrCVOyE8io6t6V0OfQjLvvQ5cxqJqGtSHTrU048ynI4I4Vu', 2, 'Activo', NULL, '2024-10-14 23:44:28', '2024-10-14 23:49:51'),
-(9, 'Ut in aut vitae haru', NULL, 'zatogaqav@mailinator.com', NULL, '$2y$10$5MyMI9o66rckVd336SLHhe64BKa05hYe68tGSFEJBAETJSVoZf4Ku', 4, 'Activo', NULL, '2024-11-02 20:41:39', '2024-11-02 20:41:39');
+(8, 'prueba', '1741480017.jpg', 'prueba@gmail.com', NULL, '$2y$10$dVLZfCKrCVOyE8io6t6V0OfQjLvvQ5cxqJqGtSHTrU048ynI4I4Vu', 2, 'Activo', NULL, '2024-10-14 23:44:28', '2025-03-09 00:26:57'),
+(9, 'Ut in aut vitae haru', NULL, 'zatogaqav@mailinator.com', NULL, '$2y$10$5MyMI9o66rckVd336SLHhe64BKa05hYe68tGSFEJBAETJSVoZf4Ku', 4, 'Activo', NULL, '2024-11-02 20:41:39', '2024-11-02 20:41:39'),
+(10, 'Diana Beatriz Ramos', NULL, 'diana@gmail.com', NULL, '$2y$10$KEv3tltYUUSH9P7u94k/F.11h79VKmTQSg1olTcCAgDk3F2OYTQmO', 4, 'Activo', NULL, '2025-03-09 00:27:50', '2025-03-09 00:27:50');
 
 -- --------------------------------------------------------
 
@@ -380,12 +405,23 @@ INSERT INTO `users` (`id`, `name`, `avatar`, `email`, `email_verified_at`, `pass
 
 CREATE TABLE `venta` (
   `id` int NOT NULL,
-  `fecha` datetime DEFAULT NULL,
-  `cliente` varchar(45) DEFAULT NULL,
-  `dni` int DEFAULT NULL,
+  `cliente_no_reg` varchar(100) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,
+  `id_cliente` int DEFAULT NULL,
   `total` float DEFAULT NULL,
-  `vendedor` int NOT NULL
+  `vendedor` int NOT NULL,
+  `updated_at` datetime NOT NULL,
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+
+--
+-- Volcado de datos para la tabla `venta`
+--
+
+INSERT INTO `venta` (`id`, `cliente_no_reg`, `id_cliente`, `total`, `vendedor`, `updated_at`, `created_at`) VALUES
+(1, NULL, 1, 820, 7, '2025-03-08 18:17:04', '2025-03-08 18:17:04'),
+(2, 'Elvis José Pavón Zeas', NULL, 810, 7, '2025-03-08 18:18:22', '2025-03-08 18:18:22'),
+(3, NULL, 2, 3060, 7, '2025-03-08 18:19:15', '2025-03-08 18:19:15'),
+(4, NULL, 1, 600, 10, '2025-03-08 18:29:00', '2025-03-08 18:29:00');
 
 -- --------------------------------------------------------
 
@@ -395,11 +431,28 @@ CREATE TABLE `venta` (
 
 CREATE TABLE `venta_producto` (
   `id` int NOT NULL,
+  `precio` float NOT NULL,
   `cantidad` int NOT NULL,
   `subtotal` float NOT NULL,
   `id_producto` int NOT NULL,
-  `id_venta` int NOT NULL
+  `id_venta` int NOT NULL,
+  `updated_at` datetime NOT NULL,
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+
+--
+-- Volcado de datos para la tabla `venta_producto`
+--
+
+INSERT INTO `venta_producto` (`id`, `precio`, `cantidad`, `subtotal`, `id_producto`, `id_venta`, `updated_at`, `created_at`) VALUES
+(1, 30, 5, 150, 12, 1, '2025-03-08 18:17:04', '2025-03-08 18:17:04'),
+(2, 60, 10, 600, 15, 1, '2025-03-08 18:17:04', '2025-03-08 18:17:04'),
+(3, 14, 5, 70, 10, 1, '2025-03-08 18:17:04', '2025-03-08 18:17:04'),
+(4, 30, 20, 600, 12, 2, '2025-03-08 18:18:22', '2025-03-08 18:18:22'),
+(5, 14, 15, 210, 10, 2, '2025-03-08 18:18:22', '2025-03-08 18:18:22'),
+(6, 30, 2, 60, 12, 3, '2025-03-08 18:19:15', '2025-03-08 18:19:15'),
+(7, 60, 50, 3000, 15, 3, '2025-03-08 18:19:15', '2025-03-08 18:19:15'),
+(8, 60, 10, 600, 15, 4, '2025-03-08 18:29:00', '2025-03-08 18:29:00');
 
 --
 -- Índices para tablas volcadas
@@ -506,7 +559,8 @@ ALTER TABLE `users`
 --
 ALTER TABLE `venta`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `vendedor` (`vendedor`);
+  ADD KEY `vendedor` (`vendedor`),
+  ADD KEY `id_cliente` (`id_cliente`);
 
 --
 -- Indices de la tabla `venta_producto`
@@ -524,19 +578,19 @@ ALTER TABLE `venta_producto`
 -- AUTO_INCREMENT de la tabla `clientes`
 --
 ALTER TABLE `clientes`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT de la tabla `compras`
 --
 ALTER TABLE `compras`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
 
 --
 -- AUTO_INCREMENT de la tabla `detalle_venta`
 --
 ALTER TABLE `detalle_venta`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT de la tabla `estado_pago`
@@ -554,7 +608,7 @@ ALTER TABLE `laboratorios`
 -- AUTO_INCREMENT de la tabla `lote`
 --
 ALTER TABLE `lote`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
 
 --
 -- AUTO_INCREMENT de la tabla `migrations`
@@ -578,7 +632,7 @@ ALTER TABLE `productos`
 -- AUTO_INCREMENT de la tabla `proveedores`
 --
 ALTER TABLE `proveedores`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT de la tabla `sexos`
@@ -602,19 +656,19 @@ ALTER TABLE `tipos_productos`
 -- AUTO_INCREMENT de la tabla `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT de la tabla `venta`
 --
 ALTER TABLE `venta`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT de la tabla `venta_producto`
 --
 ALTER TABLE `venta_producto`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- Restricciones para tablas volcadas

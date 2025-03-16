@@ -10,7 +10,7 @@ class Venta extends Model
     use HasFactory;
 
     protected $table = 'venta';
-    protected $fillable = ['total', 'vendedor', 'id_cliente','cliente_no_reg'];
+    protected $fillable = ['total', 'vendedor', 'id_cliente','cliente_no_reg','estado'];
 
     public function detalles()
     {

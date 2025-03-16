@@ -46,7 +46,7 @@
                 <div class="animate__animated  animate__fadeInDown card-body table-responsive">
                     <div class="row">
                         <div class="col-md-3 col-sm-6 col-12">
-                            <a href="adm_mas_consulta.php" class="info-box-link" title="Ver mas Informacion">
+                            <a href="{{ route('mas_consulta') }}" class="info-box-link" title="Ver mas Informacion">
                                 <div class="info-box">
                                     <span class="info-box-icon bg-info">
                                         <i class="fab fa-sellsy"></i>
@@ -61,7 +61,7 @@
                         </div>
 
                         <div class="col-md-3 col-sm-6 col-12">
-                            <a href="tu_enlace_aqui.php" class="info-box-link">
+                            <a href="{{ route('mas_consulta') }}" class="info-box-link">
                                 <div class="info-box">
                                     <span class="info-box-icon bg-success"><i class="fas fa-shopping-bag"></i></span>
 
@@ -74,7 +74,7 @@
                         </div>
 
                         <div class="col-md-3 col-sm-6 col-12">
-                            <a href="tu_enlace_aqui.php" class="info-box-link">
+                            <a href="{{ route('mas_consulta') }}" class="info-box-link">
                                 <div class="info-box">
                                     <span class="info-box-icon bg-warning"> <i class="fas fa-calendar-alt"></i></span>
 
@@ -87,7 +87,7 @@
                         </div>
 
                         <div class="col-md-3 col-sm-6 col-12">
-                            <a href="tu_enlace_aqui.php" class="info-box-link">
+                            <a href="{{ route('mas_consulta') }}" class="info-box-link">
                                 <div class="info-box">
                                     <span class="info-box-icon bg-danger">
                                         <i class="fas fa-chart-bar"></i>
@@ -102,7 +102,7 @@
                         </div>
 
                         <div class="col-md-3 col-sm-6 col-12">
-                            <a href="tu_enlace_aqui.php" class="info-box-link">
+                            <a href="{{ route('mas_consulta') }}" class="info-box-link">
                                 <div class="info-box">
                                     <span class="info-box-icon bg-secondary">
                                         <i class="fas fa-wallet"></i>
@@ -135,13 +135,13 @@
                     <table id="tabla_venta" class="display table  table-striped" style="width:100%">
                         <thead>
                             <tr>
-                                <th>#</th>
                                 <th>Codigo</th>
                                 <th>Fecha</th>
                                 <th>Cliente</th>
                                 <th>Indent</th>
                                 <th>Total</th>
                                 <th>Vendedor</th>
+                                <th>Estado</th>
                                 <th>Accion</th>
                             </tr>
                         </thead>
@@ -156,6 +156,63 @@
             </div>
         </div>
     </section>
+
+    <div class="modal fade" id="vista_venta">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header badge badge-success">
+                    <h5 class="modal-title" id="exampleModalLabel">Detalles de Venta</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="card-body">
+                    <div class="form-group">
+                        <label for="codigo_venta">Codigo Venta: </label>
+                        <span id="codigo_venta"></span>
+                    </div>
+                    <div class="form-group">
+                        <label for="fecha">Fecha: </label>
+                        <span id="fecha"></span>
+                    </div>
+                    <div class="form-group">
+                        <label for="cliente">Cliente: </label>
+                        <span id="cliente"></span>
+                    </div>
+                    <div class="form-group">
+                        <label for="dni">DNI: </label>
+                        <span id="dni"></span>
+                    </div>
+                    <div class="form-group">
+                        <label for="vendedor">Vendedor: </label>
+                        <span id="vendedor"></span>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-hover  text-nowrap">
+                            <thead class="table-success">
+                                <th>Cantidad</th>
+                                <th>Precio</th>
+                                <th>Producto</th>
+                                <th>Concentracion</th>
+                                <th>Adicional</th>
+                                <th>Laboratorio</th>
+                                <th>presentacion</th>
+                                <th>Tipo</th>
+                                <th>Subtotal</th>
+                            </thead>
+
+                            <tbody class="table-warning" id="registro">
+
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="float-right input-group-append">
+                        <h3 class="mr-1">Total: </h3>
+                        <h3 class="mr-1" id="total"></h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
 @endsection
 
@@ -210,14 +267,8 @@
                             return json.data;
                         }
                     },
-                    "columns": [{
-                            // Columna de números de fila
-                            "render": function(data, type, row, meta) {
-                                return meta.row +
-                                1; // Esto devuelve el índice de la fila + 1 (para que empiece desde 1)
-                            },
-                            "className": "text-center"
-                        },
+                    "columns": [
+
                         {
                             "data": "codigo",
                             "className": "text-center", // Centrar el código
@@ -250,7 +301,45 @@
                             "data": "vendedor"
                         }, // Columna para el nombre del vendedor
                         {
-                            "defaultContent": `
+                            data: 'estado',
+                            render: function(data, type, row) {
+                                // Verificamos si el estado es 'facturado' y le asignamos el badge verde
+                                if (data === 'Facturado') {
+                                    return '<span class="badge bg-success">' + data + '</span>';
+                                } else {
+                                    return '<span class="badge bg-danger">' + data + '</span>';
+                                }
+                            }
+                        },
+                        {
+                            data: null,
+                            defaultContent: `
+                <button class="imprimir btn btn-success">
+                    <i class="fas fa-print"></i>
+                </button>
+                <button class="ver btn btn-primary" type="button" data-toggle="modal" data-target="#vista_venta">
+                    <i class="fas fa-search"></i>
+                </button>
+                <button class="borrar btn btn-danger">
+                    <i class="fas fa-window-close"></i>
+                </button>
+            `,
+                            render: function(data, type, row) {
+                                // Si el estado de la venta es cancelado, deshabilitamos el botón de eliminar
+                                if (row.estado === 'cancelado') {
+                                    return `
+                        <button class="imprimir btn btn-success">
+                            <i class="fas fa-print"></i>
+                        </button>
+                        <button class="ver btn btn-primary" type="button" data-toggle="modal" data-target="#vista_venta">
+                            <i class="fas fa-search"></i>
+                        </button>
+                        <button class="borrar btn btn-danger" disabled>
+                            <i class="fas fa-window-close"></i>
+                        </button>
+                    `;
+                                }
+                                return `
                     <button class="imprimir btn btn-success">
                         <i class="fas fa-print"></i>
                     </button>
@@ -259,13 +348,171 @@
                     </button>
                     <button class="borrar btn btn-danger">
                         <i class="fas fa-window-close"></i>
-                    </button>`
-                        } // Columna para los botones de acción (Imprimir, Ver, Borrar)
+                    </button>
+                    `;
+                            }
+                        }
                     ],
                     "destroy": true
                 });
             }
 
+            // imprimir
+            $('#tabla_venta').on('click', '.imprimir', function() {
+                let datos = datatable.row($(this).parents()).data();
+                let id = datos.codigo;
+                let url = "{{ route('imprimir_venta', ['id' => ':id']) }}";
+                url = url.replace(':id', id); // Reemplaza el placeholder en la URL con el código de venta
+
+                window.open(url, '_blank'); // Abre la URL en una nueva pestaña
+            })
+
+            $('#tabla_venta').on('click', '.ver', function() {
+                let datos = datatable.row($(this).parents()).data();
+                let id = datos.codigo;
+                let url = "{{ route('ver_venta', ['id' => ':id']) }}";
+                url = url.replace(':id', id);
+
+                $.ajax({
+                    url: url,
+                    method: 'GET',
+                    success: function(response) {
+                        console.log(response);
+
+                        // Llenar los datos en el modal
+                        $('#codigo_venta').text(response.venta.id);
+                        $('#fecha').text(response.venta.fecha);
+                        $('#cliente').text(response.venta.cliente ? response.venta.cliente :
+                            'N/D');
+                        $('#dni').text(response.venta.dni ? response.venta.dni : 'N/D');
+
+                        $('#vendedor').text(response.venta.vendedor);
+
+                        // Llenar la tabla de detalles de venta
+                        let registroHtml = '';
+                        response.detalles.forEach(function(detalle) {
+                            registroHtml += `
+                    <tr>
+                        <td>${detalle.cantidad}</td>
+                        <td>${detalle.precio}</td>
+                        <td>${detalle.producto}</td>
+                        <td>${detalle.concentracion}</td>
+                        <td>${detalle.adicional}</td>
+                        <td>${detalle.laboratorio}</td>
+                        <td>${detalle.presentacion}</td>
+                        <td>${detalle.tipo}</td>
+                        <td>${detalle.subtotal}</td>
+                    </tr>
+                `;
+                        });
+                        $('#registro').html(registroHtml);
+
+                        // Mostrar el total de la venta
+                        $('#total').text(response.venta.total);
+
+                        // Abrir el modal
+                        $('#vista_venta').modal('show');
+                    },
+                    error: function(error) {
+                        console.log('Error al obtener la venta:', error);
+                    }
+                });
+            });
+
+            // Evento de cierre del modal
+            $('#vista_venta').on('hidden.bs.modal', function() {
+                // Limpiar el contenido al cerrar el modal
+                $('#codigo_venta').text('');
+                $('#fecha').text('');
+                $('#cliente').text('');
+                $('#dni').text('');
+                $('#vendedor').text('');
+                $('#registro').html('');
+                $('#total').text('');
+
+                // Asegurarse de que el atributo aria-hidden se maneje correctamente
+                $(this).removeAttr('aria-hidden'); // Eliminar el aria-hidden al cerrarse
+                $('body').removeClass('modal-open'); // Eliminar la clase modal-open
+                $('.modal-backdrop').remove(); // Eliminar el fondo del modal
+            });
+
+            $('#tabla_venta').on('click', '.borrar', function() {
+                let datos = datatable.row($(this).parents()).data();
+                let id = datos.codigo;
+                var url = "{{ route('borrar_venta', ['id' => ':id']) }}".replace(':id', id);
+
+                const swalWithBootstrapButtons = Swal.mixin({
+                    customClass: {
+                        confirmButton: 'btn btn-success m-1',
+                        cancelButton: 'btn btn-danger m-1',
+                    },
+                    buttonsStyling: false
+                });
+
+                swalWithBootstrapButtons.fire({
+                    title: '¿Está seguro de eliminar la venta ' + id + '?',
+                    text: "¡No podrás revertir esto!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Sí, eliminar',
+                    cancelButtonText: 'No, cancelar',
+                    reverseButtons: true
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $.ajax({
+                            url: url,
+                            type: 'POST', // Si Laravel tiene protección CSRF, usar DELETE
+                            data: {
+                                _token: "{{ csrf_token() }}" // Se agrega el token CSRF
+                            },
+                            success: function(response) {
+                                console.log("Respuesta del servidor:",
+                                    response); // Verificar qué llega
+
+                                if (response.status === 'cancelled') {
+                                    swalWithBootstrapButtons.fire(
+                                        'Eliminado!',
+                                        'La Venta: ' + id + ' Ha Sido Eliminada.',
+                                        'success'
+                                    );
+                                    listar_ventas();
+                                } else if (response.status === 'nodeltete') {
+                                    swalWithBootstrapButtons.fire(
+                                        'No Eliminado',
+                                        response
+                                        .message, // Usar el mensaje que viene del backend
+                                        'error'
+                                    );
+                                } else {
+                                    swalWithBootstrapButtons.fire(
+                                        'Error',
+                                        'Ocurrió un problema al eliminar la venta.',
+                                        'error'
+                                    );
+                                }
+                            },
+                            error: function(xhr, status, error) {
+                                console.error("Error en AJAX:", xhr.responseText);
+                                let response = JSON.parse(xhr.responseText);
+
+                                swalWithBootstrapButtons.fire(
+                                    'Error',
+                                    response.message ||
+                                    'Error desconocido al eliminar la venta.',
+                                    'error'
+                                );
+                            }
+
+                        });
+                    } else if (result.dismiss === Swal.DismissReason.cancel) {
+                        swalWithBootstrapButtons.fire(
+                            'Cancelado',
+                            'La venta no fue eliminada :)',
+                            'error'
+                        );
+                    }
+                });
+            });
 
 
         });

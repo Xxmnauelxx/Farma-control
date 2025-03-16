@@ -257,6 +257,8 @@ $(document).ready(function () {
             AgregarLS(producto);
             let contador;
             contar_producto();
+            // Mostrar Toastr de éxito
+            toastr.success("Producto agregado al carrito", "Éxito");
         }
     });
 
@@ -536,7 +538,7 @@ $(document).ready(function () {
     //11
     // procesar compra
     $(document).on("click", "#procesar-compra", (e) => {
-         procesar_compra();
+        procesar_compra();
     });
 
     function procesar_compra() {
@@ -559,14 +561,14 @@ $(document).ready(function () {
             registrar_compra(clientereg, clienteNore);
 
             Swal.fire({
-                position: 'top-end',
-                icon: 'success',
-                title: 'Se Realizo La Compra',
+                position: "top-end",
+                icon: "success",
+                title: "Se Realizo La Compra",
                 showConfirmButton: false,
-                timer: 1500
-            }).then(function() {
+                timer: 1500,
+            }).then(function () {
                 eliminarLS();
-            })
+            });
         }
     }
 
@@ -599,7 +601,6 @@ $(document).ready(function () {
                     eliminarLS(); // Primero limpiar el LocalStorage
                     generarBoucher(response.id);
                 }
-
             },
             error: function (xhr, status, error) {
                 console.error("Error en la venta:", error);
@@ -615,17 +616,15 @@ $(document).ready(function () {
         });
     }
 
-
     function generarBoucher(id) {
         let urlBoucher = generarBoucherURL.replace("__ID__", id);
 
         // Abrir el PDF en una nueva pestaña
-        let nuevaVentana = window.open(urlBoucher, '_blank');
+        let nuevaVentana = window.open(urlBoucher, "_blank");
 
         // Esperar 3 segundos y redirigir al home
-        setTimeout(function() {
+        setTimeout(function () {
             window.location.href = home; // Cambia esto por la ruta correcta de tu home location.href = home;
         }, 1000);
     }
-
 });

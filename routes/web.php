@@ -142,6 +142,16 @@ Route::prefix('venta')->group(function () {
     Route::get('vistaVentas', [VentaController::class, 'vistaVentas'])->name('vistaVentas');
     Route::post('ver_consulta', [VentaController::class, 'ver_consulta'])->name('ver_consulta');
     Route::post('listar_ventas', [VentaController::class, 'listar_ventas'])->name('listar_ventas');
+    Route::get('imprimir_venta/{id}', [VentaController::class, 'imprimir_venta'])->name('imprimir_venta');
+    Route::get('ver_venta/{id}', [VentaController::class, 'ver_venta'])->name('ver_venta');
+    Route::post('borrar_venta/{id}', [VentaController::class, 'borrar_venta'])->name('borrar_venta');
+
+    Route::get('mas_consulta', [VentaController::class, 'mas_consulta'])->name('mas_consulta');
+    Route::get('venta_mes', [VentaController::class, 'venta_mes'])->name('venta_mes');
+    Route::get('vendedormes', [VentaController::class, 'vendedormes'])->name('vendedormes');
+    Route::get('ventas_anual', [VentaController::class, 'ventas_anual'])->name('ventas_anual');
+    Route::get('producto_mas_vendido', [VentaController::class, 'producto_mas_vendido'])->name('producto_mas_vendido');
+    Route::get('cliente_mes', [VentaController::class, 'cliente_mes'])->name('cliente_mes');
 });
 
 
