@@ -83,6 +83,8 @@ Route::prefix('productos')->group(function () {
     Route::post('/cambiar_avatar', [ProductoController::class, 'cambiar_avatar'])->name('cambiar_avatar');
     Route::post('/editar_productos', [ProductoController::class, 'editar_productos'])->name('editar_productos');
     Route::post('/eliminar_producto/{id}', [ProductoController::class, 'eliminar_producto'])->name('eliminar_producto');
+    Route::get('/reporte_productos_pdf', [ProductoController::class, 'reporte_productos_pdf'])->name('reporte_productos_pdf');
+    Route::get('/reporte_productos_excel', [ProductoController::class, 'reporte_productos_excel'])->name('reporte_productos_excel');
 
 });
 
@@ -91,6 +93,7 @@ Route::prefix('productos')->group(function () {
     Route::get('/buscar_lotes', [InventarioController::class, 'buscar_lotes'])->name('buscar_lotes');
     Route::post('/agregar_stock', [InventarioController::class, 'agregar_stock'])->name('agregar_stock');
     Route::post('/borrar_lote/{id}', [InventarioController::class, 'borrar_lote'])->name('borrar_lote');
+
 
 });
 

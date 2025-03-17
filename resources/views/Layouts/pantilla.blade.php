@@ -24,6 +24,7 @@
 <link rel="stylesheet" href="{{ asset('plugins/summernote/summernote-bs5.min.css') }}">
 <link rel="stylesheet" href="{{ asset('css/font-awesome.css') }}">
 <link rel="stylesheet" href="{{ asset('css/carrito.css') }}">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
 
 <!-- overlayScrollbars -->
 <link rel="stylesheet" href="{{ asset('plugins/overlayScrollbars/css/OverlayScrollbars.min.css') }}">

@@ -7,6 +7,7 @@
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     <link href="https://cdn.datatables.net/v/dt/dt-2.1.3/datatables.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css" rel="stylesheet" />
+
 @endsection
 
 @section('contenido')
@@ -18,6 +19,10 @@
                         <i class="fas fa-box-open"> Gestion de Productos</i>
                         <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#modalCrearProducto">
                             Nuevo Producto
+                        </button>
+                        <button type="button" data-toggle="modal" data-target="#modalformatoreporte"
+                            class="animate__animated animate__shakeY btn bg-gradient-warning ml-2">
+                            Generar Reporte
                         </button>
                     </h4>
                 </div>
@@ -273,6 +278,32 @@
                         <button type="submit" class="btn btn-info w-100">Actualizar</button>
                         </form>
                     </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal generar reporte -->
+    <div class="modal fade" id="modalformatoreporte">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header badge badge-success">
+                    <h5 class="modal-title" id="exampleModalLabel">Elegir Formato De Reporte</h5>
+                    <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group text-center">
+                        <button id="boton_reporte" class="btn btn-outline-danger">
+                            Formato PDF
+                            <i class="far fa-file-pdf ml-2"></i>
+                        </button>
+                        <button id="boton_reporteExcel" class="btn btn-outline-success">
+                            Formato Excel <i class="far fa-file-excel"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="modal-footer">
+
                 </div>
             </div>
         </div>
@@ -594,7 +625,8 @@
 
             $(document).on('click', '.borrar', function(e) {
                 // Función para borrar
-                const elemento = $(this).closest('[prodId]'); // Selecciona el elemento con atributos personalizados
+                const elemento = $(this).closest(
+                    '[prodId]'); // Selecciona el elemento con atributos personalizados
                 const id = elemento.attr('prodId');
                 const nombre = elemento.attr('prodNomb');
                 const avatar = elemento.attr('ProdAvatar');
@@ -667,6 +699,97 @@
             });
 
 
+
+
+            $(document).on('click', '#boton_reporte', (e) => {
+                e.preventDefault();
+
+                // Mostrar loader antes de generar el PDF
+                Mostrar_Loader("generarReportesPDF");
+
+                var url = "{{ route('reporte_productos_pdf') }}"; // Ruta del PDF
+
+                // Esperar un pequeño tiempo antes de abrir el PDF (para que el loader sea visible)
+                setTimeout(() => {
+                    var nuevaVentana = window.open(url, '_blank');
+
+                    if (nuevaVentana) {
+                        // Si el PDF se abre correctamente, cerramos el loader
+                        Cerrar_loader("exito_reporte");
+                    } else {
+                        // Si el navegador bloquea la ventana emergente, mostramos un mensaje de error
+                        Cerrar_loader("error_reporte");
+                        alert("Por favor, habilita las ventanas emergentes para ver el reporte.");
+                    }
+                }, 1000); // Pequeño retraso para que el loader se vea bien
+            });
+
+
+            $(document).on('click', '#boton_reporteExcel', (e) => {
+                e.preventDefault();
+                Mostrar_Loader("generarReportesExcel");
+
+                var url = "{{ route('reporte_productos_excel') }}";
+
+                window.location.href = url; // Descarga el archivo automáticamente
+
+                setTimeout(() => {
+                    Cerrar_loader("exito_reporte");
+                }, 3000);
+            });
+
+
+
+
+            function Mostrar_Loader(Mensaje) {
+                var texto = null;
+                var mostrar = false;
+
+                switch (Mensaje) {
+                    case 'generarReportesPDF':
+                        texto = 'Se Esta Generando El Reporte En Formato PDF, Por Favor Espere...';
+                        mostrar = true;
+                        break;
+                }
+
+                if (mostrar) {
+                    Swal.fire({
+                        title: 'Generando Reporte',
+                        text: texto,
+                        showConfirmButton: false
+                    })
+                }
+            }
+
+            function Cerrar_loader(Mensaje) {
+                var tipo = null;
+                var texto = null;
+                var mostrar = false;
+                switch (Mensaje) {
+                    case 'exito_reporte':
+                        tipo = 'success';
+                        texto = 'El Reporte Fue Generado Correctamente.';
+                        mostrar = true;
+                        break;
+                    case 'error_reporte':
+                        tipo = 'error';
+                        texto = 'El Reporte No Puedo Generarse, Comuniquese Con El Personal De Sistema.';
+                        mostrar = true;
+                        break;
+
+                    default:
+                        swal.close();
+                        break;
+                }
+                if (mostrar) {
+                    Swal.fire({
+                        position: 'center',
+                        icon: tipo,
+                        text: texto,
+                        showConfirmButton: false
+                    })
+                }
+            }
 
 
         });
