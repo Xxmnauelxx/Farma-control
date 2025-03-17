@@ -475,6 +475,36 @@ class VentaController extends Controller
         }
     }
 
+    private function procesarCancelacion($id)
+    {
+        // Obtener la venta y sus detalles
+        $venta = Venta::findOrFail($id);
+        $detalles = DetalleVenta::where('id_det_venta', $id)->get();
+
+        foreach ($detalles as $detalle) {
+            // Verificar si el lote existe antes de actualizarlo
+            $lote = Lote::find($detalle->id_det_lote);
+
+            if ($lote) {
+                // Incrementar la cantidad en el lote
+                $lote->increment('cantidad_lote', $detalle->det_cantidad);
+
+                // Asegurar que el lote no esté en estado inactivo o vencido
+                if ($lote->estado !== 'Activo') {
+                    $lote->update(['estado' => 'Activo']); // Reactivar el lote si estaba inactivo
+                }
+            } else {
+                \Log::error("Lote no encontrado para el detalle de venta ID: {$detalle->id}");
+            }
+
+            // Marcar el detalle de venta como cancelado
+            $detalle->update(['estado' => 'cancelado']);
+        }
+
+        // Marcar la venta como cancelada
+        $venta->update(['estado' => 'cancelado']);
+    }
+
     public function mas_consulta(Request $request)
     {
         // Verifica si el usuario está autenticado

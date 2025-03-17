@@ -192,6 +192,9 @@
                             </ul>
                         </li>
 
+                        @if (Auth::check() &&
+                        Auth::user()->tipo &&
+                        Auth::user()->tipo->nombre !== 'Farmaceutico')
                         <li class="nav-item ">
                             <a href="#" class="nav-link">
                                 <i class="nav-icon fas fa-users"></i>
@@ -220,6 +223,7 @@
 
                         </li>
 
+
                         <li class="nav-item ">
                             <a href="#" class="nav-link">
                                 <i class="nav-icon fas fa-user-tie"></i>
@@ -240,7 +244,11 @@
                             </ul>
 
                         </li>
+                        @endif
 
+                        @if (Auth::check() &&
+                        Auth::user()->tipo &&
+                        Auth::user()->tipo->nombre !== 'Farmaceutico')
                         <li class="animate__animated animate__jackInTheBox nav-header">Almacen</li>
                         <li class="nav-item ">
                             <a href="#" class="nav-link">
@@ -288,8 +296,11 @@
                                 </li>
                             </ul>
                         </li>
+                        @endif
 
-
+                        @if (Auth::check() &&
+                        Auth::user()->tipo &&
+                        Auth::user()->tipo->nombre !== 'Farmaceutico')
                         <li class="nav-header">Compra</li>
                         <li class="nav-item ">
                             <a href="#" class="nav-link">
@@ -330,6 +341,7 @@
                             </ul>
 
                         </li>
+                        @endif
 
                         <li class="animate__animated animate__jackInTheBox nav-header">Gestion Ventas</li>
                         <li class="nav-item ">

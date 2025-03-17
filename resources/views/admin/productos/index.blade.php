@@ -699,8 +699,6 @@
             });
 
 
-
-
             $(document).on('click', '#boton_reporte', (e) => {
                 e.preventDefault();
 
@@ -737,8 +735,6 @@
                     Cerrar_loader("exito_reporte");
                 }, 3000);
             });
-
-
 
 
             function Mostrar_Loader(Mensaje) {
