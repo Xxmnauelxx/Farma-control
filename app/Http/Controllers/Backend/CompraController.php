@@ -3,19 +3,19 @@
 namespace App\Http\Controllers\Backend;
 
 use App\Http\Controllers\Controller;
-use App\Models\Cliente;
 use App\Models\Compra;
 use App\Models\Estado;
 use App\Models\Lote;
 use App\Models\Producto;
 use App\Models\Proveedor;
+use App\Models\User;
+use Dompdf\Dompdf;
+use Dompdf\Options;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Carbon\Carbon;
-use Dompdf\Dompdf;
-use Dompdf\Options;
-
+use Illuminate\Support\Facades\Mail;
+use App\Mail\CompraRealizada;
 
 class CompraController extends Controller
 {
@@ -56,17 +56,16 @@ class CompraController extends Controller
             // En cada iteración, formateamos los datos de cada producto
             // Concatenamos los datos necesarios con el separador ' | ' y lo agregamos al array $json
             $json[] = [
-                'nombre' =>
-                    $producto->id .
-                    ' | ' . // ID del producto
-                    $producto->nombre .
-                    ' | ' . // Nombre del producto
-                    $producto->concentracion .
-                    ' | ' . // Concentración del producto
-                    $producto->adicional .
-                    ' | ' . // Información adicional
-                    $producto->laboratorio->nombre .
-                    ' | ' . // Nombre del laboratorio (relación)
+                'nombre' => $producto->id.
+                    ' | '. // ID del producto
+                    $producto->nombre.
+                    ' | '. // Nombre del producto
+                    $producto->concentracion.
+                    ' | '. // Concentración del producto
+                    $producto->adicional.
+                    ' | '. // Información adicional
+                    $producto->laboratorio->nombre.
+                    ' | '. // Nombre del laboratorio (relación)
                     $producto->presentacion->nombre, // Nombre de la presentación (relación)
             ];
         }
@@ -132,6 +131,16 @@ class CompraController extends Controller
             ]);
         }
 
+        // 🔹 Obtener correos de usuarios con rol Root y Administrador
+        $usuariosNotificar = User::whereHas('tipo', function ($query) {
+            $query->whereIn('nombre', ['Root', 'Administrador']);  // Ajusta 'nombre' según tu BD
+        })->pluck('email');
+
+        // Enviar el correo a cada usuario
+        foreach ($usuariosNotificar as $email) {
+            Mail::to($email)->send(new CompraRealizada($compra));
+        }
+
         return response()->json('add');
     }
 
@@ -140,7 +149,7 @@ class CompraController extends Controller
         // Obtener la compra con los lotes relacionados
         $compra = Compra::with('lotes.producto')->find($id);
 
-        if (!$compra) {
+        if (! $compra) {
             return response()->json(['success' => false]);
         }
 
@@ -207,7 +216,7 @@ class CompraController extends Controller
         // ✅ Paso 3: Verificar si el registro existe
         // Si no se encuentra el registro en la base de datos, se devuelve un mensaje de error
         // y se redirige a la misma página sin realizar cambios.
-        if (!$registro) {
+        if (! $registro) {
             return back()->with('error', 'Registro no encontrado.');
         }
 
@@ -234,8 +243,8 @@ class CompraController extends Controller
             $logoContent = file_get_contents(public_path('img/logo.jpg'));
             $bg = file_get_contents(public_path('img/dimension.png'));
             // Convertir el logo a base64
-            $logoBase64 = 'data:image/jpeg;base64,' . base64_encode($logoContent);
-            $bg1 = 'data:image/png;base64,' . base64_encode($bg);
+            $logoBase64 = 'data:image/jpeg;base64,'.base64_encode($logoContent);
+            $bg1 = 'data:image/png;base64,'.base64_encode($bg);
         } catch (\Exception $e) {
             return redirect()->back()->with('error', 'No se pudo cargar la imagen del logo.');
         }
@@ -258,10 +267,10 @@ class CompraController extends Controller
             ->where('compras.id', $id)
             ->firstOrFail();
 
-             // Si no se encuentra la compra, retornar error
-              if (!$compra) {
-                  return response()->json(['error' => 'Compra no encontrada'], 404);
-              }
+        // Si no se encuentra la compra, retornar error
+        if (! $compra) {
+            return response()->json(['error' => 'Compra no encontrada'], 404);
+        }
 
         // Obtener los lotes de la compra
         $lotes = Lote::where('id_compra', $id)
@@ -279,11 +288,11 @@ class CompraController extends Controller
                 'productos.adicional',
                 'laboratorios.nombre as laboratorio',
                 'tipos_productos.nombre as tipo',
-                'presentaciones.nombre as presentacion'
+                'presentaciones.nombre as presentacion',
             ])
             ->get();
 
-             // Configurar Dompdf
+        // Configurar Dompdf
         $options = new Options();
         $options->set('defaultFont', 'DejaVu Sans');
         $options->set('isPhpEnabled', true);
@@ -315,9 +324,9 @@ class CompraController extends Controller
         $dompdf->render();
 
         // Enviar el PDF como respuesta que se abre en el navegador
-    return $dompdf->stream('compra.pdf', [
-        'Attachment' => 0  // Esto asegura que el PDF se abre en el navegador y no se descarga
-    ]);
+        return $dompdf->stream('compra.pdf', [
+            'Attachment' => 0,  // Esto asegura que el PDF se abre en el navegador y no se descarga
+        ]);
 
     }
 }

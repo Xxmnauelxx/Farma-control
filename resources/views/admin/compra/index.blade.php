@@ -141,7 +141,7 @@
                             <div class="form-group">
                                 <label for="total">Total</label>
                                 <input id="total" name="total" type="number" step="any" class="form-control"
-                                    value='1' placeholder="Ingrese total" required>
+                                    value="0" readonly>
                             </div>
                             <div class="form-group">
                                 <label for="estado">Estado de pago</label>
@@ -482,65 +482,77 @@
             }
 
             $(document).on('click', '.agregar-producto', (e) => {
-                // Asignar las variables de los campos del formulario
-                let productoSeleccionado = $('#producto').val();
-                let loteCodigo = $('#codigo_lote').val();
-                let cantidadProducto = $('#cantidad').val();
-                let fechaVencimiento = $('#vencimiento').val();
-                let precioUnitario = $('#precio_compra').val();
+    e.preventDefault(); // Evita que el formulario se envíe por error
 
-                // Validación de campos
-                if (!productoSeleccionado) {
-                    mostrarError('¡Elija un Producto!');
-                } else if (!loteCodigo) {
-                    mostrarError('¡Ingrese un Código de Lote!');
-                } else if (!cantidadProducto) {
-                    mostrarError('¡Ingrese una Cantidad!');
-                } else if (!fechaVencimiento) {
-                    mostrarError('¡Ingrese una Fecha de Vencimiento!');
-                } else if (!precioUnitario) {
-                    mostrarError('¡Ingrese un Precio de Compra!');
-                } else {
-                    // Procesar los datos
-                    let productoArray = productoSeleccionado.split(' | ');
-                    let nuevoProducto = {
-                        id: productoArray[0],
-                        nombre: productoSeleccionado,
-                        codigo: loteCodigo,
-                        cantidad: cantidadProducto,
-                        vencimiento: fechaVencimiento,
-                        precioCompra: precioUnitario
-                    };
+    let productoSeleccionado = $('#producto').val();
+    let loteCodigo = $('#codigo_lote').val();
+    let cantidadProducto = parseFloat($('#cantidad').val()) || 0;
+    let fechaVencimiento = $('#vencimiento').val();
+    let precioUnitario = parseFloat($('#precio_compra').val()) || 0;
 
-                    // Agregar producto al array de productos
-                    prods.push(nuevoProducto);
+    if (!productoSeleccionado) {
+        mostrarError('¡Elija un Producto!');
+    } else if (!loteCodigo) {
+        mostrarError('¡Ingrese un Código de Lote!');
+    } else if (cantidadProducto <= 0) {
+        mostrarError('¡Ingrese una Cantidad válida!');
+    } else if (!fechaVencimiento) {
+        mostrarError('¡Ingrese una Fecha de Vencimiento!');
+    } else if (precioUnitario <= 0) {
+        mostrarError('¡Ingrese un Precio de Compra válido!');
+    } else {
+        let productoArray = productoSeleccionado.split(' | ');
+        let nuevoProducto = {
+            id: productoArray[0],
+            nombre: productoSeleccionado,
+            codigo: loteCodigo,
+            cantidad: cantidadProducto,
+            vencimiento: fechaVencimiento,
+            precioCompra: precioUnitario,
+            total: (cantidadProducto * precioUnitario).toFixed(2) // Calcula el subtotal del producto
+        };
 
-                    // Crear la fila para agregar al listado de productos
-                    let filaProducto = `
-                        <tr prodId="${nuevoProducto.id}">
-                            <td>${nuevoProducto.nombre}</td>
-                            <td>${nuevoProducto.codigo}</td>
-                            <td>${nuevoProducto.cantidad}</td>
-                            <td>${nuevoProducto.vencimiento}</td>
-                            <td>${nuevoProducto.precioCompra}</td>
-                            <td><button class="borrar-producto btn btn-danger"><i class="fas fa-times-circle"></i></button></td>
-                        </tr>
-                    `;
+        prods.push(nuevoProducto);
+        actualizarTabla();
+    }
+});
 
-                    // Agregar la fila a la tabla de registros de compra
-                    $('#registros_compra').append(filaProducto);
+// Función para actualizar la tabla y el total
+function actualizarTabla() {
+    let totalCompra = 0;
+    let contenidoTabla = '';
 
-                    // Mostrar mensaje de éxito y ocultar el formulario
-                    $('#add-prod').hide('slow').show(1000).hide(2000);
+    prods.forEach((prod, index) => {
+        totalCompra += parseFloat(prod.total);
 
-                    // Limpiar los campos del formulario
-                    $('#producto').val('').trigger('change');
-                    $('#codigo_lote').val('');
-                    $('#cantidad').val('');
-                    $('#vencimiento').val('');
-                    $('#precio_compra').val('');
-                }
-            });
+        contenidoTabla += `
+            <tr data-index="${index}">
+                <td>${prod.nombre}</td>
+                <td>${prod.codigo}</td>
+                <td>${prod.cantidad}</td>
+                <td>${prod.vencimiento}</td>
+                <td>${prod.precioCompra}</td>
+                <td>${prod.total}</td>
+                <td>
+                    <button class="borrar-producto btn btn-danger"><i class="fas fa-times-circle"></i></button>
+                </td>
+            </tr>
+        `;
+    });
+
+    $('#registros_compra').html(contenidoTabla);
+    $('#total').val(totalCompra.toFixed(2)); // Actualiza el total
+
+    // Mostrar mensaje de éxito
+    $('#add-prod').hide('slow').show(1000).hide(2000);
+
+    // Limpiar los campos
+    $('#producto').val('').trigger('change');
+    $('#codigo_lote').val('');
+    $('#cantidad').val('');
+    $('#vencimiento').val('');
+    $('#precio_compra').val('');
+}
 
             // Función para mostrar mensajes de error
             function mostrarError(mensaje) {
@@ -656,7 +668,7 @@
                             Swal.fire({
                                 position: 'top-end',
                                 icon: 'success',
-                                title: 'Se Realizo La Compra',
+                                title: 'Se Realizo La Compra y se Envio Correo de Compra',
                                 showConfirmButton: false,
                                 timer: 1500
                             }).then(function() {
@@ -784,7 +796,7 @@
                 var url = "{{ route('imprimir_compra', ['id' => ':id']) }}";
                 url = url.replace(':id', id);
 
-                window.open(url, '_blank'); 
+                window.open(url, '_blank');
 
             });
 

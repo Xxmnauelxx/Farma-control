@@ -14,6 +14,9 @@ use DB;
 use Dompdf\Dompdf;
 use Dompdf\Options;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\VentaRealizada;
+use App\Models\User;
 
 class VentaController extends Controller
 {
@@ -142,6 +145,16 @@ class VentaController extends Controller
             }
 
             DB::commit();
+
+            // 🔹 Obtener correos de usuarios con rol Root y Administrador
+            $usuariosNotificar = User::whereHas('tipo', function ($query) {
+                $query->whereIn('nombre', ['Root', 'Administrador']);  // Ajusta 'nombre' según tu BD
+            })->pluck('email');
+
+            // Enviar el correo a cada usuario
+            foreach ($usuariosNotificar as $email) {
+                Mail::to($email)->send(new VentaRealizada($venta));
+            }
 
             return response()->json(['message' => 'Venta registrada con éxito', 'id' => $venta->id]);
         } catch (\Exception $e) {

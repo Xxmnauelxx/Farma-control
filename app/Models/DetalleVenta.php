@@ -10,6 +10,7 @@ class DetalleVenta extends Model
     use HasFactory;
 
     protected $table = 'detalle_venta';
+
     protected $fillable = [
         'det_cantidad',
         'det_vencimiento',
@@ -17,11 +18,16 @@ class DetalleVenta extends Model
         'id_det_prod',
         'lote_id_prov',
         'id_det_venta',
-        'estado'
+        'estado',
     ];
 
     public function venta()
     {
         return $this->belongsTo(Venta::class, 'id_det_venta');
+    }
+
+    public function producto()
+    {
+        return $this->belongsTo(Producto::class, 'id_det_prod');
     }
 }
