@@ -158,8 +158,6 @@ Route::prefix('venta')->group(function () {
 });
 
 
-
-
 Route::prefix('admin')->group(function () {
     Route::middleware('admin-logueado:0')->group(function () {
         Route::get('/', [AdminController::class, 'login'])->name('login');

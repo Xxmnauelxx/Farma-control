@@ -66,12 +66,17 @@ class VentaController extends Controller
     public function enviar_venta(Request $request)
     {
         $request->validate([
+            'pago' => 'required|numeric',
+            'vuelto' => 'required|numeric',
             'total' => 'required|numeric',
             'cliente' => 'nullable|string',
             'cliente1' => 'nullable|string',
             'productos' => 'required|array',
         ]);
 
+
+        $pago = $request->pago;
+        $vuelto = $request->vuelto;
         $total = $request->total;
         $cliente = $request->cliente;
         $cliente1 = $request->cliente1;
@@ -83,6 +88,8 @@ class VentaController extends Controller
         try {
             // Crear la venta
             $venta = Venta::create([
+                'pago' => $pago,
+                'vuelto' => $vuelto,
                 'total' => $total,
                 'vendedor' => $vendedor,
                 'id_cliente' => $cliente,
@@ -190,12 +197,18 @@ class VentaController extends Controller
         // Preparar los datos para el boucher
         $datosBoucher = [
             'fecha' => $venta->created_at->format('d/m/Y H:i:s'),
-            'cliente' => optional($venta->cliente)->nombre ?? 'Cliente desconocido', // Asume que tienes una relación con Cliente
+            'factura' => $venta->id,
+            'pago' => $venta->pago,
+            'vuelto' => $venta->vuelto,
+            'cliente' => optional($venta->cliente)->nombre ?? 'CLIENTE CONTADO', // Asume que tienes una relación con Cliente
             'total' => $total,
             'productos' => $productos,
             'logo_url' => $logoBase64,
-            'nombre_negocio' => 'Supermercado XYZ',
-            'direccion_negocio' => 'Calle Ficticia, Ciudad',
+            'nombre_negocio' => 'FARMACIA ELVIS CODE',
+            'regimen' => 'REGIMEN CUOTA FIJA',
+            'ruc' => '123456789',
+            'aut' => 'DGI AFC-ARC-SLR-001-09-2025',
+            'direccion_negocio' => 'CONTADO',
             'telefono_negocio' => '123-456-789',
             'fecha_impresion' => $fechaImpresion, // Fecha de impresión
             'usuario_generador' => $usuarioGenerador, // Usuario que generó la venta

@@ -109,21 +109,21 @@
                                                     <span class="info-box-icon"><i class="fas fa-tag"></i></span>
                                                     <div class="info-box-content">
                                                         <span class="info-box-text text-left ">SUB TOTAL</span>
-                                                        <span class="info-box-number" id="subtotal">10</span>
+                                                        <span class="info-box-number" id="subtotal">0</span>
                                                     </div>
                                                 </div>
                                                 <div class="info-box mb-3 bg-warning">
                                                     <span class="info-box-icon"><i class="fas fa-tag"></i></span>
                                                     <div class="info-box-content">
                                                         <span class="info-box-text text-left ">IGV</span>
-                                                        <span class="info-box-number"id="con_igv">2</span>
+                                                        <span class="info-box-number"id="con_igv">0</span>
                                                     </div>
                                                 </div>
                                                 <div class="info-box mb-3 bg-info">
                                                     <span class="info-box-icon"><i class="fas fa-tag"></i></span>
                                                     <div class="info-box-content">
                                                         <span class="info-box-text text-left ">SIN DESCUENTO</span>
-                                                        <span class="info-box-number" id="total_sin_descuento">12</span>
+                                                        <span class="info-box-number" id="total_sin_descuento">0</span>
                                                     </div>
                                                 </div>
                                             </div>
@@ -152,7 +152,7 @@
                                                             class="ion ion-ios-cart-outline"></i></span>
                                                     <div class="info-box-content">
                                                         <span class="info-box-text text-left ">TOTAL</span>
-                                                        <span class="info-box-number" id="total">12</span>
+                                                        <span class="info-box-number" id="total">0</span>
                                                     </div>
                                                 </div>
                                             </div>
@@ -182,7 +182,7 @@
                                                             class="fas fa-money-bill-wave"></i></span>
                                                     <div class="info-box-content">
                                                         <span class="info-box-text text-left ">VUELTO</span>
-                                                        <span class="info-box-number" id="vuelto">3</span>
+                                                        <span class="info-box-number" id="vuelto">0</span>
                                                     </div>
                                                 </div>
                                             </div>

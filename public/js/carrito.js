@@ -555,7 +555,7 @@ $(document).ready(function () {
                 title: "Oops...",
                 text: "No hay productos, seleccione algunos",
             }).then(() => {
-                location.href = home;
+                 location.href = home;
             });
         } else {
             registrar_compra(clientereg, clienteNore);
@@ -579,6 +579,8 @@ $(document).ready(function () {
     });
 
     function registrar_compra(clientereg, clienteNore) {
+        let pago = parseFloat($("#pago").val().trim()) || 0;
+        let vuelto = $("#vuelto").text().trim();
         let total = $("#total").text().trim();
         let productos = RecuperarLS(); // Debe ser un array
 
@@ -588,6 +590,8 @@ $(document).ready(function () {
             url: url,
             type: "POST",
             data: {
+                pago: pago,
+                vuelto: vuelto,
                 total: total,
                 cliente: clientereg, // Solo uno de los dos
                 cliente1: clienteNore, // Solo uno de los dos
