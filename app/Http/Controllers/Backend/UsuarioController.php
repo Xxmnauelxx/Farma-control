@@ -8,6 +8,8 @@ use App\Models\User;
 use Auth;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Password;
 use Storage;
 
 class UsuarioController extends Controller
@@ -23,18 +25,17 @@ class UsuarioController extends Controller
 
             $tipousuario = Tipo::all();
         }
+
         return view('admin/usuario.index', compact('usuario', 'nombre', 'tipo', 'tipousuario', 'user'));
     }
-
 
     public function saveuser(Request $request)
     {
         $request->validate([
             'nombre' => 'required|string|max:255',
             'email' => 'required|string|max:255|unique:users',
-            'id_tipo' => 'required|exists:tipos,id'
+            'id_tipo' => 'required|exists:tipos,id',
         ]);
-
 
         $user = new User();
         $user->name = $request->input('nombre');
@@ -47,24 +48,23 @@ class UsuarioController extends Controller
         return redirect()->route('listausuario')->with('success', 'Usuario creado correctamente.');
     }
 
-
     public function verusuario($id)
     {
         $usuario = User::with('tipo')->find($id);
         if ($usuario) {
             // Construir la URL completa para el avatar
-            $usuario->avatar = $usuario->avatar ? asset('storage/profile_images/' . $usuario->avatar) : asset('images/default_avatar.png');
+            $usuario->avatar = $usuario->avatar ? asset('storage/profile_images/'.$usuario->avatar) : asset('images/default_avatar.png');
         }
+
         return response()->json($usuario);
     }
-
 
     public function editarus($id)
     {
         $user = User::find($id);
 
         // Construir la URL completa de la imagen de perfil
-        $avatarUrl = $user->avatar ? asset('storage/profile_images/' . $user->avatar) : asset('img/default.jpg');
+        $avatarUrl = $user->avatar ? asset('storage/profile_images/'.$user->avatar) : asset('img/default.jpg');
 
         return response()->json([
             'id' => $user->id,
@@ -78,15 +78,14 @@ class UsuarioController extends Controller
         ]);
     }
 
-
     public function editar_usuario(Request $request)
     {
         $request->validate([
             'iduser' => 'required',
-            'username' => "required",
-            'useremail' => "required",
-            'id_tipo_edit' => "required",
-            'profile_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
+            'username' => 'required',
+            'useremail' => 'required',
+            'id_tipo_edit' => 'required',
+            'profile_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
         $user = User::find($request->input('iduser'));
@@ -98,11 +97,11 @@ class UsuarioController extends Controller
         if ($request->hasFile('profile_image')) {
             // Eliminar la imagen antigua si existe
             if ($user->avatar) {
-                Storage::delete('public/profile_images/' . $user->avatar);
+                Storage::delete('public/profile_images/'.$user->avatar);
             }
 
             // Subir la nueva imagen
-            $imageName = time() . '.' . $request->profile_image->extension();
+            $imageName = time().'.'.$request->profile_image->extension();
             $request->file('profile_image')->storeAs('public/profile_images', $imageName);
 
             // Actualizar la ruta de la imagen en el perfil del usuario
@@ -113,7 +112,6 @@ class UsuarioController extends Controller
         return redirect()->route('listausuario')->with('success', 'Usuario editado correctamente.');
     }
 
-
     public function eliminar($id)
     {
         $usuario = User::find($id);
@@ -121,12 +119,12 @@ class UsuarioController extends Controller
         if ($usuario) {
             $usuario->estado = 'Inactivo';
             $usuario->save();
+
             return response()->json(['success' => true, 'message' => 'usario Inactivo']);
         }
 
         return response()->json(['error' => true, 'message' => 'usario no encontrado']);
     }
-
 
     public function usuariosinactivos()
     {
@@ -139,15 +137,15 @@ class UsuarioController extends Controller
 
             $tipousuario = Tipo::all();
         }
+
         return view('admin/usuario.inactivo', compact('usuario', 'nombre', 'tipo', 'tipousuario', 'user'));
     }
-
 
     public function activarusaurios($id)
     {
         $user = User::find($id);
 
-        if (!$user) {
+        if (! $user) {
             return response()->json(['success' => false, 'message' => 'usario no Encontrado']);
         }
 
@@ -155,5 +153,57 @@ class UsuarioController extends Controller
         $user->save();
 
         return response()->json(['success' => true, 'message' => 'usario activado correctamente']);
+    }
+
+    public function recuperar_pass()
+    {
+        return view('admin.usuario.recuperar_pass');
+    }
+
+    public function enviar_email(Request $request)
+    {
+        $request->validate(['email' => 'required|email']);
+
+        Log::info('Intentando enviar correo a: '.$request->email);
+
+        $status = Password::sendResetLink($request->only('email'));
+
+        Log::info('Estado del envío: '.$status);
+
+        if ($status === Password::RESET_LINK_SENT) {
+            return back()->with('status', __($status)); // Muestra el mensaje real
+        }
+
+        return back()->withErrors(['email' => __($status)]); // Muestra el error real
+    }
+
+    public function showResetForm($token)
+    {
+        return view('admin.usuario.reset')->with(['token' => $token]);
+    }
+
+    public function reset(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email',
+            'password' => 'required|confirmed|min:8',
+            'token' => 'required',
+        ]);
+
+        $status = Password::reset(
+            $request->only('email', 'password', 'password_confirmation', 'token'),
+            function ($user, $password) {
+                $user->forceFill([
+                    'password' => bcrypt($password),
+                ])->save();
+            }
+        );
+
+        // Verificar si el restablecimiento fue exitoso
+        if ($status === Password::PASSWORD_RESET) {
+            return redirect()->route('login')->with('success', 'Contraseña restablecida con éxito');
+        }
+
+        return back()->withErrors(['email' => 'Hubo un problema al restablecer tu contraseña.']);
     }
 }

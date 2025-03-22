@@ -4,10 +4,10 @@ use App\Http\Controllers\Backend\AdminController;
 use App\Http\Controllers\Backend\AtributoController;
 use App\Http\Controllers\Backend\ClienteController;
 use App\Http\Controllers\Backend\CompraController;
+use App\Http\Controllers\Backend\InventarioController;
 use App\Http\Controllers\Backend\ProductoController;
 use App\Http\Controllers\Backend\ProveedorController;
 use App\Http\Controllers\Backend\UsuarioController;
-use App\Http\Controllers\Backend\InventarioController;
 use App\Http\Controllers\Backend\VentaController;
 use Illuminate\Support\Facades\Route;
 
@@ -24,19 +24,18 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     // Verificar si el usuario no está autenticado
-    if (!auth()->check()) {
+    if (! auth()->check()) {
         return Redirect::action([AdminController::class, 'login']);
     }
+
     return redirect()->route('home');
 });
-
 
 Route::prefix('usuario')->group(function () {
     Route::get('/listarusuario', [UsuarioController::class, 'listausuario'])->name('listausuario');
     Route::get('/usuariosinactivos', [UsuarioController::class, 'usuariosinactivos'])->name('usuariosinactivos');
 
     Route::post('/saveuser', [UsuarioController::class, 'saveuser'])->name('saveuser');
-
 
     Route::get('/verusuario/{id}', [UsuarioController::class, 'verusuario'])->name('verusuario');
 
@@ -48,12 +47,11 @@ Route::prefix('usuario')->group(function () {
     Route::post('/eliminar/{id}', [UsuarioController::class, 'eliminar'])->name('eliminar');
 
     Route::post('/activarusaurios/{id}', [UsuarioController::class, 'activarusaurios'])->name('activarusaurios');
-
 });
 
 Route::prefix('atributos')->group(function () {
     Route::get('/vistaAtributos', [AtributoController::class, 'vistaAtributos'])->name('vistaAtributos');
-// proceso del laboratorio
+    // proceso del laboratorio
     Route::get('/listarlaboratorios', [AtributoController::class, 'listarLaboratorios'])->name('listarLaboratorios');
     Route::get('/datoslaboratorio/{id}', [AtributoController::class, 'datoslaboratorio'])->name('datoslaboratorio');
     Route::post('/crearLaboratorio', [AtributoController::class, 'crearLaboratorio'])->name('crearLaboratorio');
@@ -75,7 +73,6 @@ Route::prefix('atributos')->group(function () {
     Route::post('/eliminarPre/{id}', [AtributoController::class, 'eliminarPre'])->name('eliminarPre');
 });
 
-
 Route::prefix('productos')->group(function () {
     Route::get('/vistaproducto', [ProductoController::class, 'vistaproducto'])->name('vistaproducto');
     Route::post('/crear_productos', [ProductoController::class, 'crear_productos'])->name('crear_productos');
@@ -94,9 +91,7 @@ Route::prefix('productos')->group(function () {
     Route::post('/agregar_stock', [InventarioController::class, 'agregar_stock'])->name('agregar_stock');
     Route::post('/borrar_lote/{id}', [InventarioController::class, 'borrar_lote'])->name('borrar_lote');
 
-
 });
-
 
 Route::prefix('proveedor')->group(function () {
     Route::get('/vistaproveedor', [ProveedorController::class, 'vistaproveedor'])->name('vistaproveedor');
@@ -107,7 +102,6 @@ Route::prefix('proveedor')->group(function () {
     Route::post('/proveedor/eliminar_proveedor/{id}', [ProveedorController::class, 'eliminar_proveedor'])->name('eliminar_proveedor');
 });
 
-
 Route::prefix('cliente')->group(function () {
     Route::get('/cliente', [ClienteController::class, 'listaCliente'])->name('listaCliente');
     Route::post('/crear_cliente', [ClienteController::class, 'crear_cliente'])->name('crear_cliente');
@@ -116,7 +110,6 @@ Route::prefix('cliente')->group(function () {
     Route::put('/actualizar', [ClienteController::class, 'actualizar_cliente'])->name('actualizar_cliente');
     Route::post('/eliminar_cliente/{id}', [ClienteController::class, 'eliminar_cliente'])->name('eliminar_cliente');
 });
-
 
 Route::prefix('compra')->group(function () {
     Route::get('/Compra', [CompraController::class, 'vista_compra'])->name('vista_compra');
@@ -129,7 +122,6 @@ Route::prefix('compra')->group(function () {
     Route::post('cambiarEstado', [CompraController::class, 'cambiarEstado'])->name('cambiarEstado');
     Route::get('imprimir_compra/{id}', [CompraController::class, 'imprimir_compra'])->name('imprimir_compra');
 });
-
 
 Route::prefix('home')->group(function () {
     Route::get('lotes_riesgo', [InventarioController::class, 'lotes_riesgo'])->name('lotes_riesgo');
@@ -157,13 +149,18 @@ Route::prefix('venta')->group(function () {
     Route::get('cliente_mes', [VentaController::class, 'cliente_mes'])->name('cliente_mes');
 });
 
-
 Route::prefix('admin')->group(function () {
     Route::middleware('admin-logueado:0')->group(function () {
         Route::get('/', [AdminController::class, 'login'])->name('login');
         Route::get('/registro', [AdminController::class, 'registro'])->name('registro');
         Route::post('/loginInicio', [AdminController::class, 'loginInicio'])->name('loginInicio');
         Route::post('/crearusuario', [AdminController::class, 'crearusuario'])->name('crearusuario');
+
+        Route::get('/recuperar_pass', [UsuarioController::class, 'recuperar_pass'])->name('recuperar_pass');
+        Route::post('/enviar_email', [UsuarioController::class, 'enviar_email'])->name('enviar_email');
+        Route::get('/password/reset/{token}', [UsuarioController::class, 'showResetForm'])->name('password.reset');
+        Route::post('/password/reset', [UsuarioController::class, 'reset'])->name('passwordupdate');
+
 
     });
 

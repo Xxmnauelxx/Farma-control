@@ -81,7 +81,7 @@
 
                                                 <div class="mb-3">
                                                     <div class="float-end">
-                                                        <a href="auth-pass-reset-cover.html" class="text-muted">Olvido
+                                                        <a href="{{ route('recuperar_pass') }}" class="text-muted">Olvido
                                                             Contraseña?</a>
                                                     </div>
                                                     <label class="form-label" for="password-input">Contraseña</label>
