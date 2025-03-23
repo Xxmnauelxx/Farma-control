@@ -3,9 +3,9 @@
 namespace App\Http\Controllers\Backend;
 
 use App\Http\Controllers\Controller;
-use App\Notifications\CustomResetPasswordNotification;
 use App\Models\Tipo;
 use App\Models\User;
+use App\Notifications\CustomResetPasswordNotification;
 use Auth;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -156,69 +156,98 @@ class UsuarioController extends Controller
         return response()->json(['success' => true, 'message' => 'usario activado correctamente']);
     }
 
+    /**
+     * 1️⃣ Mostrar la vista donde el usuario puede ingresar su correo para recuperar la contraseña.
+     */
     public function recuperar_pass()
     {
         return view('admin.usuario.recuperar_pass');
     }
 
+    /**
+     * 2️⃣ Procesar la solicitud de recuperación de contraseña.
+     *    - Verifica que el correo ingresado sea válido.
+     *    - Busca el usuario en la base de datos.
+     *    - Si el usuario existe, genera un enlace de recuperación.
+     *    - Envía el enlace al correo del usuario.
+     */
     public function enviar_email(Request $request)
     {
+        // Validamos que el email sea obligatorio y con formato correcto
         $request->validate(['email' => 'required|email']);
 
+        // Log para depuración: Verificamos que se está intentando enviar el correo
         Log::info('Intentando enviar correo a: '.$request->email);
 
         // Buscar el usuario por el correo electrónico
         $user = User::where('email', $request->email)->first();
 
-        // Si el usuario no existe, devolver un error
+        // Si el usuario no existe, devolvemos un mensaje de error
         if (! $user) {
             return back()->withErrors(['email' => 'No se encontró un usuario con este correo.']);
         }
 
-        // Generar el token para restablecer la contraseña
+        // Generamos el enlace para restablecer la contraseña
         $status = Password::sendResetLink($request->only('email'));
 
+        // Log para depuración: Verificamos el estado del envío
         Log::info('Estado del envío: '.$status);
 
-        // Si el enlace se ha enviado correctamente
+        // Si el enlace se envió correctamente, notificamos al usuario
         if ($status === Password::RESET_LINK_SENT) {
-            // Usamos la notificación personalizada para enviar el correo
             $user->notify(new CustomResetPasswordNotification($status));
 
-            return back()->with('status', __($status)); // Muestra el mensaje real
+            // Redirigimos de vuelta con un mensaje de éxito
+            return back()->with('status', __($status));
         }
 
-        // En caso de error al enviar el enlace de restablecimiento
-        return back()->withErrors(['email' => __($status)]); // Muestra el error real
+        // En caso de error al enviar el enlace, devolvemos el mensaje correspondiente
+        return back()->withErrors(['email' => __($status)]);
     }
 
+    /**
+     * 3️⃣ Mostrar el formulario donde el usuario ingresará su nueva contraseña.
+     *    - Laravel usa un token único para identificar la solicitud de restablecimiento.
+     */
     public function showResetForm($token)
     {
+        // Cargamos la vista del formulario de restablecimiento de contraseña y pasamos el token
         return view('admin.usuario.reset')->with(['token' => $token]);
     }
 
+    /**
+     * 4️⃣ Procesar el cambio de contraseña.
+     *    - Validamos los datos ingresados.
+     *    - Verificamos que el token sea válido.
+     *    - Guardamos la nueva contraseña en la base de datos.
+     *    - Redirigimos al login con un mensaje de éxito.
+     */
     public function reset(Request $request)
     {
+        // Validamos que los datos sean correctos
         $request->validate([
-            'email' => 'required|email',
-            'password' => 'required|confirmed|min:8',
-            'token' => 'required',
+            'email' => 'required|email',             // El correo es obligatorio y debe ser válido
+            'password' => 'required|confirmed|min:8', // La contraseña debe tener al menos 8 caracteres y coincidir con la confirmación
+            'token' => 'required',                    // Se necesita el token generado en el correo
         ]);
 
+        // Intentamos restablecer la contraseña
         $status = Password::reset(
             $request->only('email', 'password', 'password_confirmation', 'token'),
             function ($user, $password) {
+                // Guardamos la nueva contraseña en la base de datos
                 $user->forceFill([
-                    'password' => bcrypt($password),
+                    'password' => bcrypt($password), // Encriptamos la contraseña antes de guardarla
                 ])->save();
             }
         );
 
-        // Verificar si el restablecimiento fue exitoso
+        // Si el restablecimiento fue exitoso, redirigimos al login con un mensaje de éxito
         if ($status === Password::PASSWORD_RESET) {
             return redirect()->route('login')->with('success', 'Contraseña restablecida con éxito');
         }
 
+        // Si hubo un problema, mostramos un mensaje de error
         return back()->withErrors(['email' => 'Hubo un problema al restablecer tu contraseña.']);
     }
 }
