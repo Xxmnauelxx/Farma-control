@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Backend;
 
 use App\Http\Controllers\Controller;
+use App\Notifications\CustomResetPasswordNotification;
 use App\Models\Tipo;
 use App\Models\User;
 use Auth;
@@ -166,14 +167,28 @@ class UsuarioController extends Controller
 
         Log::info('Intentando enviar correo a: '.$request->email);
 
+        // Buscar el usuario por el correo electrónico
+        $user = User::where('email', $request->email)->first();
+
+        // Si el usuario no existe, devolver un error
+        if (! $user) {
+            return back()->withErrors(['email' => 'No se encontró un usuario con este correo.']);
+        }
+
+        // Generar el token para restablecer la contraseña
         $status = Password::sendResetLink($request->only('email'));
 
         Log::info('Estado del envío: '.$status);
 
+        // Si el enlace se ha enviado correctamente
         if ($status === Password::RESET_LINK_SENT) {
+            // Usamos la notificación personalizada para enviar el correo
+            $user->notify(new CustomResetPasswordNotification($status));
+
             return back()->with('status', __($status)); // Muestra el mensaje real
         }
 
+        // En caso de error al enviar el enlace de restablecimiento
         return back()->withErrors(['email' => __($status)]); // Muestra el error real
     }
 
