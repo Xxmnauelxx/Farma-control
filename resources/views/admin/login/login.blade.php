@@ -61,8 +61,8 @@
                                 <div class="col-lg-6">
                                     <div class="p-lg-5 p-4">
                                         <div class="text-center">
-                                            <h5 class="text-primary">Farmacia Elvis-Code !</h5>
-                                            <img src="{{ asset('img/logo.png') }}" alt=""
+                                            <h5 class="text-primary">Farmacia Farma-Control !</h5>
+                                            <img src="{{ asset('img/logo2.png') }}" alt=""
                                                 style="width: 70px; height:70px">
                                         </div>
 

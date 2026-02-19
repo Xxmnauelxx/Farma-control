@@ -8,7 +8,7 @@
 
     <link rel="stylesheet"
         href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
-    <link rel="shortcut icon" href="{{ asset('img/logo.png') }}" type="image/x-icon" />
+    <link rel="shortcut icon" href="{{ asset('img/logo2.png') }}" type="image/x-icon" />
     <link rel="stylesheet" href="{{ asset('plugins/fontawesome-free/css/all.min.css') }}">
     <link rel="stylesheet" href="{{ asset('plugins/icheck-bootstrap/icheck-bootstrap.min.css') }}">
     <link rel="stylesheet" href="{{ asset('dist/css/adminlte.min.css') }}">
@@ -18,11 +18,11 @@
     <div class="login-box">
         <div class="card card-outline card-primary">
             <div class="card-header text-center">
-                <span class="h4"><b>Farmacia</b>Elvis Code</span>
+                <span class="h4"><b>Farmacia</b>Farma-Control</span>
             </div>
             <div class="card-body">
                 <p class="login-box-msg">Recuperar Contraseña</p>
-                
+
                 @if (session('status'))
                     <div class="alert alert-success" role="alert">
                         {{ session('status') }}
@@ -46,7 +46,7 @@
                 </form>
 
                 <p class="mt-3 mb-1">
-                    <a href="{{ route('login') }}">Login</a>
+                    <a href="{{ route('login') }}">Volver atras</a>
                 </p>
             </div>
         </div>

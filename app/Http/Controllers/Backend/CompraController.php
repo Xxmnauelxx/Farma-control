@@ -131,15 +131,7 @@ class CompraController extends Controller
             ]);
         }
 
-        // 🔹 Obtener correos de usuarios con rol Root y Administrador
-        $usuariosNotificar = User::whereHas('tipo', function ($query) {
-            $query->whereIn('nombre', ['Root', 'Administrador']);  // Ajusta 'nombre' según tu BD
-        })->pluck('email');
 
-        // Enviar el correo a cada usuario
-        foreach ($usuariosNotificar as $email) {
-            Mail::to($email)->send(new CompraRealizada($compra));
-        }
 
         return response()->json('add');
     }
@@ -240,7 +232,7 @@ class CompraController extends Controller
 
         try {
             // Obtener el contenido del logo
-            $logoContent = file_get_contents(public_path('img/logo.jpg'));
+            $logoContent = file_get_contents(public_path('img/logo2.png'));
             $bg = file_get_contents(public_path('img/dimension.png'));
             // Convertir el logo a base64
             $logoBase64 = 'data:image/jpeg;base64,'.base64_encode($logoContent);

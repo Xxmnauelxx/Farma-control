@@ -81,10 +81,10 @@
                                             <th scope="col">Nombre</th>
                                             <th scope="col">Stock</th>
                                             <th scope="col">Precio</th>
-                                            <th scope="col">Concent</th>
+                                            <th scope="col">Concentraciòn</th>
+                                            <th scope="col">Presentaciòn</th>
                                             <th scope="col">Adicional</th>
                                             <th scope="col">Lab</th>
-                                            <th scope="col">Pres</th>
                                             <th scope="col">Cantidad</th>
                                             <th scope="col">Sub Total</th>
                                             <th scope="col">Eliminar</th>

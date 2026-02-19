@@ -60,7 +60,7 @@
     <div class="container">
         <!-- Cambia la ruta de tu logo aquí -->
         <div class="logo-container">
-            <h1>Elvis Code - Farmacia</h1>
+            <h1>Farmacia Farma-control</h1>
         </div>
 
 
@@ -75,7 +75,7 @@
 
         <p>Si no has solicitado un cambio de contraseña, puedes ignorar o eliminar este e-mail.</p>
 
-        <p>Saludos,<br><strong>Farmacia Elvis Code</strong></p>
+        <p>Saludos,<br><strong>Farmacia Farma-Control</strong></p>
 
         <hr>
 

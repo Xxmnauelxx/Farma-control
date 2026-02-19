@@ -153,15 +153,7 @@ class VentaController extends Controller
 
             DB::commit();
 
-            // 🔹 Obtener correos de usuarios con rol Root y Administrador
-            $usuariosNotificar = User::whereHas('tipo', function ($query) {
-                $query->whereIn('nombre', ['Root', 'Administrador']);  // Ajusta 'nombre' según tu BD
-            })->pluck('email');
 
-            // Enviar el correo a cada usuario
-            foreach ($usuariosNotificar as $email) {
-                Mail::to($email)->send(new VentaRealizada($venta));
-            }
 
             return response()->json(['message' => 'Venta registrada con éxito', 'id' => $venta->id]);
         } catch (\Exception $e) {
@@ -173,7 +165,7 @@ class VentaController extends Controller
 
     public function generar_boucher($id)
     {
-        $logoContent = file_get_contents(public_path('img/logo.png'));
+        $logoContent = file_get_contents(public_path('img/logo2.png'));
         // Convertir el logo a base64
         $logoBase64 = 'data:image/png;base64,'.base64_encode($logoContent);
 
@@ -204,12 +196,12 @@ class VentaController extends Controller
             'total' => $total,
             'productos' => $productos,
             'logo_url' => $logoBase64,
-            'nombre_negocio' => 'FARMACIA ELVIS CODE',
+            'nombre_negocio' => 'FARMACIA FARMA-CONTROL',
             'regimen' => 'REGIMEN CUOTA FIJA',
             'ruc' => '123456789',
             'aut' => 'DGI AFC-ARC-SLR-001-09-2025',
             'direccion_negocio' => 'CONTADO',
-            'telefono_negocio' => '123-456-789',
+            'telefono_negocio' => '939-631-427',
             'fecha_impresion' => $fechaImpresion, // Fecha de impresión
             'usuario_generador' => $usuarioGenerador, // Usuario que generó la venta
         ];
@@ -344,7 +336,7 @@ class VentaController extends Controller
     {
         try {
             // Obtener el contenido del logo
-            $logoContent = file_get_contents(public_path('img/logo.jpg'));
+            $logoContent = file_get_contents(public_path('img/logo2.png'));
             $bg = file_get_contents(public_path('img/dimension.png'));
             // Convertir el logo a base64
             $logoBase64 = 'data:image/jpeg;base64,'.base64_encode($logoContent);

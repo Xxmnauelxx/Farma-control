@@ -305,7 +305,7 @@
     </main>
 
     <footer>
-        <div>Created by Warpice (Elvis José Pavón Zeas) Ingeniero en Sistema.</div>
+        <div>Created by Warpice (Manuel Tananta Lino) Ingeniero en Sistema.</div>
     </footer>
 </body>
 

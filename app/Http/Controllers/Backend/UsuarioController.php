@@ -231,6 +231,7 @@ class UsuarioController extends Controller
             'token' => 'required',                    // Se necesita el token generado en el correo
         ]);
 
+
         // Intentamos restablecer la contraseña
         $status = Password::reset(
             $request->only('email', 'password', 'password_confirmation', 'token'),

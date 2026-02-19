@@ -135,10 +135,10 @@
                     <table id="tabla_venta" class="display table  table-striped" style="width:100%">
                         <thead>
                             <tr>
-                                <th>Codigo</th>
+                                <th>N°</th>
                                 <th>Fecha</th>
                                 <th>Cliente</th>
-                                <th>Indent</th>
+                                <th>Doc. Identifacion</th>
                                 <th>Total</th>
                                 <th>Vendedor</th>
                                 <th>Estado</th>

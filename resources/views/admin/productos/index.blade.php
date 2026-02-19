@@ -100,10 +100,16 @@
                             </div>
                             <div class="row">
                                 <div class="col-md-4">
-                                    <div class="form-group">
+                                   <div class="form-group">
                                         <label for="precio">Precio:</label>
-                                        <input type="number" class="form-control" value="1" name="precio"
-                                            id="precio" placeholder="Ingrese precio del producto">
+                                        <input type="number"
+                                            class="form-control"
+                                            value="0.00"
+                                            name="precio"
+                                            id="precio"
+                                            step="0.01"
+                                            min="0"
+                                            placeholder="Ingrese precio del producto">
                                     </div>
                                 </div>
                                 <div class="col-md-4">

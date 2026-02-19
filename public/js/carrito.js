@@ -46,7 +46,7 @@ $(document).ready(function () {
                                                 <li class="small"><span class="fa-li"><i class="fas fa-lg fa-prescription-bottle-alt"></i></span><b> Adicional:</b>${prod.adicional}</li>
                                                 <li class="small"><span class="fa-li"><i class="fas fa-lg fa-flask"></i></span><b>Laboratorio:</b>${prod.laboratorio}</li>
                                                 <li class="small"><span class="fa-li"><i class="fas fa-lg fa-copyright"></i></span><b>Tipo:</b>${prod.tipo}</li>
-                                                <li class="small"><span class="fa-li"><i class="fas fa-lg fa-pills"></i></span><b>Presentación:</b>${prod.presentacion}</li>
+
                                             </ul>
                                         </div>
                                         <div class="col-5 text-center">
@@ -402,9 +402,10 @@ $(document).ready(function () {
                      <td>${data.stock}</td>
                      <td class="precio">${data.precio}</td>
                      <td>${data.concentracion}</td>
+                     <td>${data.presentacion}</td>
                      <td>${data.adicional}</td>
                      <td>${data.laboratorio}</td>
-                     <td>${data.presentacion}</td>
+
                      <td>
                         <input type="number" min="1" class="form-control cantidad_producto" value="${data.cantidad}">
                      </td>

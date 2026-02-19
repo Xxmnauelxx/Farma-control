@@ -260,10 +260,10 @@
         <h1>COMPROBANTE DE VENTA</h1>
 
         <div id="company" class="clearfix">
-            <div id="negocio">Farmacia Elvis Code</div>
-            <div>Direccion Numero ###,<br /> Managua, Carazo</div>
+            <div id="negocio">Farmacia Farma-Control</div>
+            <div>Direccion Numero ###,<br /> Pucallpa, Alamedas</div>
             <div>(505) 86479297</div>
-            <div><a href="zeaselvis7@gmail.com">zeaselvis7@gmail.com</a></div>
+            <div><a href="xxmanuel.love@gmail.com">xxmanuel.love@gmail.com</a></div>
         </div>
 
         <div id="project">
@@ -352,8 +352,8 @@
     </main>
 
     <footer>
-        <div>Created by Warpice (Elvis José Pavón Zeas) Ingeniero en Sistema.</div>
+        <div>Created by Warpice (Manuel Tananta Lino) Ingeniero en Sistema.</div>
     </footer>
-</body>
+</body>s
 
 </html>

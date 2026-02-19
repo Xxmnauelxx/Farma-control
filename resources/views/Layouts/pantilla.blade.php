@@ -9,7 +9,7 @@
 <title>@yield('title') | Farmacia</title>
 
 @yield('css')
-<link rel="shortcut icon" href="{{ asset('img/logo.png') }}" type="image/x-icon" />
+<link rel="shortcut icon" href="{{ asset('img/logo2.png') }}" type="image/x-icon" />
 <!-- Font Awesome -->
 <link rel="stylesheet" href="{{ asset('plugins/fontawesome-free/css/all.min.css') }}">
 <!-- Ionicons -->
@@ -78,7 +78,7 @@
             segundos < 10 ? '0' : '') + segundos;
 
         // Actualizar el contenido del elemento con id "horaActual"
-        document.getElementById('horaActual').innerText = 'Nicaragua, ' + fechaFormateada + ', ' + horaFormateada;
+        document.getElementById('horaActual').innerText = 'Peru, ' + fechaFormateada + ', ' + horaFormateada;
     }
 
     // Actualizar la fecha y hora cada segundo
@@ -143,18 +143,18 @@
 
                 <li class="nav-item dropdown">
                     <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">
-                        <img id="avatar4" src="{{ asset('img/logo.jpg') }}" class="user-image img-circle"
+                        <img id="avatar4" src="{{ asset('img/logo2.png') }}" class="user-image img-circle"
                             alt="User Image" style="width: 40px; height:35px">
                         <span class="d-none d-md-inline">{{ $nombre }}</span>
                     </a>
                     <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
                         <!-- User image -->
                         <div class="dropdown-header text-center bg-primary">
-                            <img id="avatar4" src="{{ asset('img/logo.jpg') }}" class="img-circle"
+                            <img id="avatar4" src="{{ asset('img/logo2.png') }}" class="img-circle"
                                 alt="User Image" style="width: 100px; height:150px;">
                             <p>
                                 {{ $nombre }} <br>
-                                <small>Miembro desde Nov. 2021</small>
+                                <small>Miembro desde Set.. 2025</small>
                             </p>
                         </div>
                         <!-- Menu Footer-->
@@ -172,9 +172,9 @@
 
         <aside class="main-sidebar sidebar-dark-primary elevation-4">
             <a href="{{ route('home') }}" class="brand-link">
-                <img src="{{ asset('img/logo.png') }}" class="brand-image img-circle elevation-3"
+                <img src="{{ asset('img/logo2.png') }}" class="brand-image img-circle elevation-3"
                     style="opacity: .8">
-                <span class="brand-text font-weight-light">Elvis Code</span>
+                <span class="brand-text font-weight-light">Farma-Control</span>
             </a>
 
 
@@ -343,21 +343,29 @@
                         </li>
                         @endif
 
-                        <li class="animate__animated animate__jackInTheBox nav-header">Gestion Ventas</li>
+                        <li class="animate__animated animate__jackInTheBox nav-header">Control</li>
                         <li class="nav-item ">
                             <a href="#" class="nav-link">
                                 <i class="nav-icon fas fa-shopping-cart"></i>
                                 <p>
-                                    Lista Ventas
+                                    Gestion de Ventas
                                     <i class="fas fa-angle-left right"></i>
                                 </p>
                             </a>
 
                             <ul class="nav nav-treeview">
+
                                 <li class="nav-item">
                                     <a href="{{ route('vistaVentas') }}" class="nav-link">
                                         <i class="far fa-money-bill-alt  nav-icon"></i>
-                                        <p>Ver Ventas</p>
+                                        <p>Ventas</p>
+                                    </a>
+                                </li>
+
+                                <li class="nav-item">
+                                    <a href="{{ route('vistaVentas') }}" class="nav-link">
+                                        <i class="far fa-money-bill-alt  nav-icon"></i>
+                                        <p>Historial de Ventas</p>
                                     </a>
                                 </li>
                             </ul>
