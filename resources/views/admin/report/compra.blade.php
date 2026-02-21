@@ -20,7 +20,7 @@
 
         /*encabezado morado*/
         table thead tr {
-            height: 20px;
+            height: 10px;
             background: rgb(70, 83, 83);
         }
 
@@ -37,18 +37,21 @@
         }
 
         .watermark {
-    position: absolute;
-    top: 45%;
-    left: 50%;
-    transform: translate(-50%, -90%) rotate(-50deg);
-    font-size: 80px;
-    color: rgba(255, 0, 0, 0.2); /* Rojo con transparencia */
-    font-weight: bold;
-    text-transform: uppercase;
-    z-index: 1000; /* Mayor que la tabla */
-    white-space: nowrap;
-    pointer-events: none; /* No interfiere con clics en la tabla */
-}
+            position: absolute;
+            top: 45%;
+            left: 50%;
+            transform: translate(-50%, -90%) rotate(-50deg);
+            font-size: 80px;
+            color: rgba(255, 0, 0, 0.2);
+            /* Rojo con transparencia */
+            font-weight: bold;
+            text-transform: uppercase;
+            z-index: 1000;
+            /* Mayor que la tabla */
+            white-space: nowrap;
+            pointer-events: none;
+            /* No interfiere con clics en la tabla */
+        }
 
 
 
@@ -119,7 +122,7 @@
             width: 100%;
             border-collapse: collapse;
             border-spacing: 0;
-            margin-bottom: 20px;
+            margin-bottom: 10px;
         }
 
         table tr:nth-child(2n-1) td {
@@ -137,7 +140,7 @@
             border-bottom: 1px solid #cee1f1;
             white-space: nowrap;
             font-weight: normal;
-            font-size: 15px;
+            font-size: 11px;
         }
 
         table .service {
@@ -162,7 +165,7 @@
         }
 
         table td.total {
-            font-size: 12px;
+            font-size: 11px;
             color: rgb(3, 80, 0);
         }
 
@@ -221,7 +224,7 @@
                 <tr>
                     <th class="service">#</th>
                     <th class="service">Códig</th>
-                    <th class="service">Cant</th>
+                    <th class="service">Cant/unidades</th>
                     <th class="service">Venc</th>
                     <th class="service">P.Compra</th>
                     <th class="service">Producto</th>
@@ -238,7 +241,7 @@
                         <td class="servic">{{ $lote->cantidad }}</td>
                         <td class="servic">{{ $lote->vencimiento }}</td>
                         <td class="servic">
-                            CS/.{{ number_format($lote->precio_compra, 2) }}</td>
+                            S/.{{ number_format($lote->precio_compra, 2) }}</td>
                         <td class="servic">{{ $lote->producto }} |
                             {{ $lote->concentracion }}</td>
                         <td class="servic">{{ $lote->laboratorio }}</td>
@@ -264,15 +267,15 @@
 
                 <tr>
                     <td colspan="8" class="grand total">SUBTOTAL</td>
-                    <td class="grand total">CS/.{{ number_format($subtotal, 2) }}</td>
+                    <td class="grand total">S/.{{ number_format($subtotal, 2) }}</td>
                 </tr>
                 <tr>
                     <td colspan="8" class="grand total">IGV (15%)</td>
-                    <td class="grand total">CS/.{{ number_format($igv, 2) }}</td>
+                    <td class="grand total">S/.{{ number_format($igv, 2) }}</td>
                 </tr>
                 <tr>
                     <td colspan="8" class="grand total">TOTAL</td>
-                    <td class="grand total">CS/.{{ number_format($total, 2) }}</td>
+                    <td class="grand total">S/.{{ number_format($total, 2) }}</td>
                 </tr>
 
             </tbody>

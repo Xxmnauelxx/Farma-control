@@ -10,7 +10,6 @@ $(document).ready(function () {
     var funcion;
     // Llamamos a la función 'buscar_producto' al cargar la página para mostrar todos los productos inicialmente.
     buscar_producto();
-    mostrar_lotes_riesgo();
     contar_producto();
     RecuperarLS_carrito();
     RecuperarLS_carrito_compra();
@@ -24,7 +23,7 @@ $(document).ready(function () {
                 consulta: consulta,
             }, // Pasamos la consulta de búsqueda al servidor
             success: function (data) {
-                //console.log(data)
+                console.log(data)
                 let template = ""; // Inicializamos una variable para almacenar el HTML de los productos
 
                 // Iteramos sobre cada producto recibido
@@ -34,13 +33,13 @@ $(document).ready(function () {
                         <div prodStock="${prod.stock}" prodId="${prod.id}" prodNomb="${prod.nombre}" prodPrecio="${prod.precio}" prodConcent="${prod.concentracion}" prodAdicional="${prod.adicional}" prodLab="${prod.laboratorio_id}" prodTip="${prod.tipo_id}" prodPrese="${prod.presentacion_id}" prodAvatar="${prod.avatar}" class="col-12 col-sm-6 col-md-4 d-flex align-items-stretch flex-column">
                             <div class="card bg-light d-flex flex-fill">
                                 <div class="card-header text-muted border-bottom-0">
-                                    <i class="fas fa-lg fa-cubes mr-1"></i> ${prod.stock}
+                                    <i class="fas fa-lg fa-cubes mr-1"></i> ${prod.stock} | Unidad
                                 </div>
                                 <div class="card-body pt-0">
                                     <div class="row">
                                         <div class="col-7">
                                             <h2 class="lead"><b>${prod.nombre}</b></h2>
-                                            <h4 class="lead"><b><i class="fas fa-lg fa-dollar-sign mr-1"></i>${prod.precio}</b></h4>
+                                            <h4 class="lead"><b><strong>S/.</strong>${prod.precio}</b></h4>
                                             <ul class="ml-4 mb-0 fa-ul text-muted">
                                                 <li class="small"><span class="fa-li  mr-1"><i class="fas fa-lg fa-mortar-pestle"></i></span><b>Concentración:</b> ${prod.concentracion}</li>
                                                 <li class="small"><span class="fa-li"><i class="fas fa-lg fa-prescription-bottle-alt"></i></span><b> Adicional:</b>${prod.adicional}</li>
@@ -88,82 +87,6 @@ $(document).ready(function () {
             buscar_producto(); // Si no hay valor, mostramos todos los productos
         }
     });
-
-    function mostrar_lotes_riesgo() {
-        var url = urlLoteRiesgo;
-
-        // Realizamos la llamada AJAX
-        $.ajax({
-            url: url, // URL de la ruta en Laravel
-            type: "GET",
-            data: {
-                _token: "{{ csrf_token() }}", // Token CSRF para la seguridad
-            },
-            success: function (response) {
-                // Inicializamos el DataTable solo si no está inicializado previamente
-                if ($.fn.dataTable.isDataTable("#lote")) {
-                    $("#lote").DataTable().clear().destroy(); // Destruir la tabla existente si ya estaba cargada
-                }
-
-                // Inicializamos el DataTable con los nuevos datos
-                $("#lote").DataTable({
-                    data: response, // Los datos que se retornan del servidor
-                    columns: [
-                        {
-                            data: "id",
-                        },
-                        {
-                            data: "nombre",
-                        },
-                        {
-                            data: "stock",
-                        },
-                        {
-                            data: "estado",
-                        },
-                        {
-                            data: "laboratorio",
-                        },
-                        {
-                            data: "presentacion",
-                        },
-                        {
-                            data: "proveedor",
-                        },
-                        {
-                            data: "mes",
-                        },
-                        {
-                            data: "dia",
-                        },
-                        {
-                            data: "hora",
-                        },
-                    ],
-                    columnDefs: [
-                        {
-                            targets: [3], // Columna de 'estado'
-                            render: function (data, type, row) {
-                                let campo = "";
-                                // Mostrar los badges según el estado
-                                if (row.estado === "danger") {
-                                    campo = `<span class="badge badge-danger">Vencido</span>`;
-                                }
-                                if (row.estado === "warning") {
-                                    campo = `<span class="badge badge-warning">Próximo a vencer</span>`;
-                                }
-                                return campo; // Devuelve el badge adecuado
-                            },
-                        },
-                    ],
-                    destroy: true, // Permite destruir y volver a inicializar la tabla
-                });
-            },
-            error: function (xhr, status, error) {
-                console.log("Hubo un error: " + error); // Mensaje en caso de error
-            },
-        });
-    }
 
     //procesos para usar el carrito de compras
     //1

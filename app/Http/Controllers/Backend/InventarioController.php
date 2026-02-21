@@ -44,21 +44,24 @@ class InventarioController extends Controller
             ->join('proveedores', 'proveedores.id', '=', 'compras.id_proveedor') // Se une con la tabla "proveedores" para obtener los datos del proveedor
             ->join('productos', 'productos.id', '=', 'l.id_producto') // Se une con la tabla "productos" para obtener información del producto
             ->join('laboratorios', 'productos.id_lab', '=', 'laboratorios.id') // Se une con la tabla "laboratorios" para obtener el nombre del laboratorio
+            ->join('adicionales', 'productos.id_adicional', '=', 'adicionales.id') // Se une con la tabla "laboratorios" para obtener el nombre del laboratorio
             ->join('tipos_productos', 'productos.id_tip_prod', '=', 'tipos_productos.id') // Se une con la tabla "tipos_productos" para obtener el tipo de producto
             ->join('presentaciones', 'productos.id_present', '=', 'presentaciones.id') // Se une con la tabla "presentaciones" para obtener la presentación del producto
+            ->join('medidas', 'l.id_unidad', '=', 'medidas.id') // Se une con la tabla "presentaciones" para obtener la presentación del producto
             ->select(
                 'l.id as id_lote', // Se selecciona el ID del lote
                 DB::raw("CONCAT(l.id, ' | ', l.codigo) as codigo"), // Se concatena el ID y el código del lote
                 'l.cantidad_lote', // Se selecciona la cantidad de productos en el lote
                 'l.vencimiento', // Se selecciona la fecha de vencimiento del lote
                 'productos.concentracion', // Se selecciona la concentración del producto
-                'productos.adicional', // Se selecciona información adicional del producto
+                'adicionales.nombre as adicional', // Se selecciona información adicional del producto
                 'productos.nombre as prod_nom', // Se selecciona el nombre del producto
                 'laboratorios.nombre as lab_nom', // Se selecciona el nombre del laboratorio
                 'tipos_productos.nombre as tip_nom', // Se selecciona el tipo de producto
                 'presentaciones.nombre as pre_nom', // Se selecciona la presentación del producto
                 'proveedores.nombre as proveedor', // Se selecciona el nombre del proveedor
                 'productos.avatar as logo', // Se selecciona la imagen del producto
+                'medidas.nombre as unidad'
             )
             ->where('l.estado', 'Activo') // Se filtran solo los lotes con estado "Activo"
             ->when(!empty($consulta), function ($query) use ($consulta) {
@@ -67,6 +70,8 @@ class InventarioController extends Controller
             ->orderBy('productos.nombre') // Se ordenan los resultados por el nombre del producto
             ->limit(25) // Se limita la consulta a 25 resultados
             ->get(); // Se ejecuta la consulta y se obtienen los resultados
+
+        //dd($lotes);
 
         // Se inicializa un array vacío para almacenar los lotes en formato JSON
         $json = [];
@@ -112,13 +117,14 @@ class InventarioController extends Controller
                 'codigo' => $lote->codigo, // Código del lote
                 'nombre' => $lote->prod_nom, // Nombre del producto
                 'concentracion' => $lote->concentracion, // Concentración del producto
-                'adicional' => $lote->adicional, // Información adicional
+                'adicional' => $lote->adicional ?? 'Sin asignar', // Información adicional
                 'vencimiento' => $lote->vencimiento, // Fecha de vencimiento
                 'proveedor' => $lote->proveedor, // Proveedor del producto
                 'stock' => $lote->cantidad_lote, // Cantidad disponible en el lote
                 'laboratorio' => $lote->lab_nom, // Laboratorio del producto
                 'tipo' => $lote->tip_nom, // Tipo del producto
                 'presentacion' => $lote->pre_nom, // Presentación del producto
+                'unidad'=>$lote->unidad,
                 'avatar' =>
                     $lote->logo && file_exists(public_path('storage/producto/' . $lote->logo))
                         ? asset('storage/producto/' . $lote->logo) // Se usa la imagen del producto si existe en el almacenamiento
@@ -130,6 +136,8 @@ class InventarioController extends Controller
                 'estado' => $estado, // Estado del lote (success, warning, danger)
                 'invert' => $verificado, // Indica si el lote ya venció
             ];
+
+            //dd($json);
         }
 
         // Se devuelve la respuesta en formato JSON para que el frontend la procese
@@ -183,6 +191,7 @@ class InventarioController extends Controller
             ->where('estado', 'Activo') // Solo lotes activos
             ->get();
 
+        //dd($lotes);
         // Inicializar el arreglo que almacenará los lotes en riesgo
         $json = [];
 

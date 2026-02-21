@@ -195,7 +195,7 @@
 
                             <div class="row justify-content-between">
                                 <div class="col-md-4 mb-2">
-                                    <a href="{{ route('home') }}" class="btn btn-primary btn-block">Seguir
+                                    <a href="{{ route('crear_venta') }}" class="btn btn-primary btn-block">Seguir
                                         comprando</a>
                                 </div>
                                 <div class="col-xs-12 col-md-4">

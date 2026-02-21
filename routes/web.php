@@ -147,6 +147,9 @@ Route::prefix('venta')->group(function () {
     Route::get('ventas_anual', [VentaController::class, 'ventas_anual'])->name('ventas_anual');
     Route::get('producto_mas_vendido', [VentaController::class, 'producto_mas_vendido'])->name('producto_mas_vendido');
     Route::get('cliente_mes', [VentaController::class, 'cliente_mes'])->name('cliente_mes');
+
+
+     Route::get('crear_venta', [VentaController::class, 'crear_venta'])->name('crear_venta');
 });
 
 Route::prefix('admin')->group(function () {

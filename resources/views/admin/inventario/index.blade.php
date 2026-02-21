@@ -130,7 +130,7 @@
 
                             template += `<div class="card-header  border-bottom-0">
                          <h6>codigo ${lote.codigo}</h6>
-                              <i class="fas fa-lg fa-cubes mr-1"></i> ${lote.stock}
+                              <i class="fas fa-lg fa-cubes mr-1"></i> ${lote.stock} | ${lote.unidad}
                          </div>
                          <div class="card-body pt-0">
                               <div class="row">

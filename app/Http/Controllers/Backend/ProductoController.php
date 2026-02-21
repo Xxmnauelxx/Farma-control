@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Backend;
 
 use App\Http\Controllers\Controller;
+use App\Models\Adicional;
 use App\Models\Laboratorio;
 use App\Models\Presentacion;
 use App\Models\Producto;
@@ -35,9 +36,10 @@ class ProductoController extends Controller
         $tipospr = TipoProducto::all(); // Modelos de tipos de productos
         $laboratorios = Laboratorio::all(); // Modelos de laboratorios
         $presentaciones = Presentacion::all(); // Modelos de presentaciones
+        $adiconal = Adicional::all();
 
         // Devuelve la vista para mostrar los productos, pasando datos como el usuario y los registros adicionales
-        return view('admin.productos.index', compact('usuario', 'nombre', 'tipo', 'tipospr', 'laboratorios', 'presentaciones'));
+        return view('admin.productos.index', compact('usuario', 'nombre', 'tipo', 'tipospr', 'laboratorios', 'presentaciones', 'adiconal'));
     }
 
     // Función que maneja la creación de nuevos productos
@@ -50,6 +52,7 @@ class ProductoController extends Controller
             'adicional' => 'nullable|string|max:255',
             'precio' => 'required|numeric',
             'laboratorio' => 'required|integer|exists:laboratorios,id',
+            'id_adicional' => 'required|integer|exists:adicionales,id',
             'tipo' => 'required|integer|exists:tipos,id',
             'presentacion' => 'required|integer|exists:presentaciones,id',
         ]);
@@ -73,7 +76,7 @@ class ProductoController extends Controller
         $producto = new Producto();
         $producto->nombre = $validatedData['nombre_producto'];
         $producto->concentracion = $validatedData['concentracion'];
-        $producto->adicional = $validatedData['adicional'];
+        $producto->id_adicional = $validatedData['id_adicional'];
         $producto->precio = $validatedData['precio'];
         $producto->id_lab = $validatedData['laboratorio'];
         $producto->id_tip_prod = $validatedData['tipo'];
@@ -96,12 +99,14 @@ class ProductoController extends Controller
         $consulta = $request->input('consulta');
 
         // Prepara la consulta para buscar productos activos
-        $query = Producto::with(['laboratorio', 'tipoProducto', 'presentacion'])
+        $query = Producto::with(['laboratorio', 'tipoProducto', 'presentacion', 'adicional'])
             ->where('estado', 'Activo'); // Solo productos activos
 
+        //dd($query);
+
         // Si se proporcionó una consulta, filtra los productos por nombre
-        if (! empty($consulta)) {
-            $query->where('nombre', 'like', '%'.$consulta.'%');
+        if (!empty($consulta)) {
+            $query->where('nombre', 'like', '%' . $consulta . '%');
         } else {
             // Si no se proporciona consulta, ordena por nombre
             $query->orderBy('nombre');
@@ -116,17 +121,18 @@ class ProductoController extends Controller
                 'id' => $producto->id,
                 'nombre' => $producto->nombre,
                 'concentracion' => $producto->concentracion,
-                'adicional' => $producto->adicional,
                 'precio' => $producto->precio,
                 'stock' => $producto->obtenerStock() > 0 ? $producto->obtenerStock() : 'Sin lotes',  // Asegúrate de que haya un campo de stock en el modelo
                 'laboratorio' => $producto->laboratorio->nombre,  // Accede al nombre del laboratorio
+                'adicional' => $producto->adicional?->nombre ?? 'Sin asignar',  // Accede al nombre del laboratorio
+                'adicional_id' => $producto->id_adicional,  // Accede al nombre del laboratorio
                 'tipo' => $producto->tipoProducto->nombre,  // Accede al nombre del tipo de producto
                 'presentacion' => $producto->presentacion->nombre,  // Accede al nombre de la presentación
                 'laboratorio_id' => $producto->id_lab,
                 'tipo_id' => $producto->id_tip_prod,
                 'presentacion_id' => $producto->id_present,
-                'avatar' => $producto->avatar && file_exists(public_path('storage/producto/'.$producto->avatar))
-                    ? asset('storage/producto/'.$producto->avatar)
+                'avatar' => $producto->avatar && file_exists(public_path('storage/producto/' . $producto->avatar))
+                    ? asset('storage/producto/' . $producto->avatar)
                     : asset('img/producto_default.jpeg'),
 
             ];
@@ -150,18 +156,18 @@ class ProductoController extends Controller
             // Guardar la nueva imagen
             if ($request->hasFile('photo')) {
                 $file = $request->file('photo');
-                $filename = time().'.'.$file->getClientOriginalExtension();
-                $filePath = 'producto/'.$filename; // Ruta donde se almacenará la imagen
+                $filename = time() . '.' . $file->getClientOriginalExtension();
+                $filePath = 'producto/' . $filename; // Ruta donde se almacenará la imagen
 
                 // Verificar que el directorio exista y crearlo si no existe
                 $directory = storage_path('app/public/producto');
-                if (! File::exists($directory)) {
+                if (!File::exists($directory)) {
                     File::makeDirectory($directory, 0755, true); // Crear el directorio si no existe
                 }
 
                 // Elimina la imagen antigua si existe
                 if ($producto->avatar) {
-                    Storage::delete('public/producto/'.$producto->avatar);
+                    Storage::delete('public/producto/' . $producto->avatar);
                 }
 
                 // Guardar la nueva imagen en el directorio 'producto' dentro de 'storage/app/public'
@@ -174,7 +180,7 @@ class ProductoController extends Controller
                 // Retornar una respuesta JSON con la nueva ruta de la imagen
                 return response()->json([
                     'alert' => 'edit',
-                    'ruta' => asset('storage/producto/'.$filename),
+                    'ruta' => asset('storage/producto/' . $filename),
                 ]);
             }
         }
@@ -189,7 +195,7 @@ class ProductoController extends Controller
     {
         $producto = Producto::find($request->id_edit_prod);
 
-        if (! $producto) {
+        if (!$producto) {
             return response()->json([
                 'status' => 'error',
                 'message' => 'Producto no encontrado.',
@@ -199,7 +205,7 @@ class ProductoController extends Controller
         $producto->update([
             'nombre' => $request->edit_nombre,
             'concentracion' => $request->edit_concentracion,
-            'adicional' => $request->edit_adicional,
+            'id_adicional' => $request->edit_adicional,
             'precio' => $request->edit_precio,
             'id_lab' => $request->edit_laboratorio,
             'id_tip_prod' => $request->edit_tipo,
@@ -216,7 +222,7 @@ class ProductoController extends Controller
     {
         // Verificar si el producto tiene lotes activos
         $lotesActivos = DB::table('lote')
-            ->where('id_prod', $id)
+            ->where('id_producto', $id)
             ->where('estado', 'Activo')
             ->exists(); // Retorna true si hay lotes activos
 
@@ -244,8 +250,8 @@ class ProductoController extends Controller
             $logoContent = file_get_contents(public_path('img/logo.jpg'));
             $bg = file_get_contents(public_path('img/dimension.png'));
             // Convertir el logo a base64
-            $logoBase64 = 'data:image/jpeg;base64,'.base64_encode($logoContent);
-            $bg1 = 'data:image/png;base64,'.base64_encode($bg);
+            $logoBase64 = 'data:image/jpeg;base64,' . base64_encode($logoContent);
+            $bg1 = 'data:image/png;base64,' . base64_encode($bg);
 
             // Consulta para obtener productos con su stock
             $productos = DB::table('productos as p')

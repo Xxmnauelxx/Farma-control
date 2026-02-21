@@ -21,6 +21,7 @@ class Lote extends Model
         'cantidad_lote',
         'id_compra',
         'id_producto',
+        'id_unidad'
     ];
 
     // Relación con el modelo Compra
@@ -33,5 +34,10 @@ class Lote extends Model
     public function producto()
     {
         return $this->belongsTo(Producto::class, 'id_producto');
+    }
+
+    public function unidad()
+    {
+        return $this->belongsTo(Unidad::class,'id_unidad');
     }
 }

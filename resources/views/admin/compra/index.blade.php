@@ -71,7 +71,7 @@
                                     <td style="text-align:center">{{ $compra->codigo }}</td>
                                     <td style="text-align:center">{{ $compra->fecha_compra }}</td>
                                     <td style="text-align:center">{{ $compra->fecha_entrega }}</td>
-                                    <td style="text-align:center">{{ $compra->total }}</td>
+                                    <td style="text-align:center"> S/. {{ $compra->total }}</td>
                                     <td style="text-align:center">
                                         @if ($compra->estado == 'Cancelado')
                                             <span class="badge bg-warning">{{ $compra->estado }}</span>
@@ -177,13 +177,24 @@
                                 <input id="cantidad" type="number" class="form-control" value='1'
                                     placeholder="Ingrese cantidad" required>
                             </div>
+
+                            <div class="form-group">
+                                <label for="unidad">Tipo de medida</label>
+                                <!-- Visible (solo para mostrar) -->
+                                <input type="text" class="form-control"
+                                    value="{{ $unidad?->nombre ?? 'Sin unidad' }} ({{ $unidad?->abreviatura ?? '' }})"
+                                    readonly>
+
+                                <!-- Hidden para enviar el ID -->
+                                <input type="hidden" name="unidad_id" id="unidad_id" value="{{ $unidad?->id }}">
+                            </div>
                             <div class="form-group ">
                                 <label for="vencimiento">Vencimiento: </label>
                                 <input id="vencimiento" type="date" class="form-control"
                                     placeholder="Ingrese vencimiento" required>
                             </div>
                             <div class="form-group">
-                                <label for="precio_compra">Precio de compra</label>
+                                <label for="precio_compra">Precio de compra (Soles)</label>
                                 <input id="precio_compra" type="number" step="any" class="form-control"
                                     value='1' placeholder="Ingrese precio de compra" required>
                             </div>
@@ -202,6 +213,8 @@
                                     <th>Cantidad</th>
                                     <th>Vencimiento</th>
                                     <th>Precio de compra</th>
+                                    <th>Tipo</th>
+                                    <th>Total</th>
                                     <th>Operacion</th>
                                 </tr>
                             </thead>
@@ -210,10 +223,14 @@
                             </tbody>
                         </table>
                     </div>
+
+
+                    <div class="modal-footer">
+                        <button class="crear-compra btn bg-gradient-success text-center w-100">Crear compra</button>
+                    </div>
                 </div>
-                <div class="modal-footer">
-                    <button class="crear-compra btn bg-gradient-success text-center w-100">Crear compra</button>
-                </div>
+
+
             </div>
         </div>
     </div>
@@ -256,6 +273,12 @@
                                             <label for="proveedor">Proveedor:</label>
                                             <span id="proveedor1"></span>
                                         </div>
+
+
+                                        <div class="form-group">
+                                            <label for="unidad1">Medidas:</label>
+                                            <span class="badge badge-info" id="unidad1"></span>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -296,7 +319,7 @@
                         <!-- Total (colocado correctamente debajo de la tabla) -->
                         <div class="row mt-3">
                             <div class="col-md-12 text-end">
-                                <h3 class="d-inline">Total: </h3>
+                                <h3 class="d-inline">Total (S/.): </h3>
                                 <h3 class="d-inline" id="total1"></h3>
                             </div>
                         </div>
@@ -381,11 +404,9 @@
 
                     // Si la solicitud es exitosa, se ejecuta esta función
                     success: function(data) {
+                        console.log(data)
                         // Los datos recibidos son almacenados en la variable 'productos'
                         let productos = data;
-
-                        // Se muestra la lista de productos en la consola del navegador
-                        {{--  console.log(productos);  --}}
 
                         // Se inicializa una variable para almacenar el contenido HTML del select
                         let template = '';
@@ -394,8 +415,8 @@
                         productos.forEach(producto => {
                             // Aquí se crea una opción para el select con el nombre del producto
                             template += `
-                                <option value="${producto.nombre}">${producto.nombre}</option>
-                                `;
+                                    <option value="${producto.nombre}">${producto.nombre}</option>
+                                    `;
                         });
 
                         // Se establece el contenido del select con el id 'producto' al HTML generado
@@ -431,8 +452,8 @@
                         // Recorremos los estados recibidos y generamos una opción para cada uno
                         estados.forEach(estado => {
                             template += `
-                                <option value="${estado.id}">${estado.nombre}</option>
-                                `;
+                                    <option value="${estado.id}">${estado.nombre}</option>
+                                    `;
                         });
 
                         // Se actualiza el select con el id 'estado' con las opciones generadas
@@ -467,8 +488,8 @@
                         // Recorremos los proveedores recibidos y generamos una opción para cada uno
                         proveedores.forEach(proveedor => {
                             template += `
-                        <option value="${proveedor.id}">${proveedor.nombre}</option>
-                        `;
+                            <option value="${proveedor.id}">${proveedor.nombre}</option>
+                            `;
                         });
 
                         // Se actualiza el select con el id 'proveedor' con las opciones generadas
@@ -482,77 +503,82 @@
             }
 
             $(document).on('click', '.agregar-producto', (e) => {
-    e.preventDefault(); // Evita que el formulario se envíe por error
+                e.preventDefault(); // Evita que el formulario se envíe por error
 
-    let productoSeleccionado = $('#producto').val();
-    let loteCodigo = $('#codigo_lote').val();
-    let cantidadProducto = parseFloat($('#cantidad').val()) || 0;
-    let fechaVencimiento = $('#vencimiento').val();
-    let precioUnitario = parseFloat($('#precio_compra').val()) || 0;
+                let productoSeleccionado = $('#producto').val();
+                let loteCodigo = $('#codigo_lote').val();
+                let unidad_id = $('#unidad_id').val();
+                let cantidadProducto = parseFloat($('#cantidad').val()) || 0;
+                let fechaVencimiento = $('#vencimiento').val();
+                let precioUnitario = parseFloat($('#precio_compra').val()) || 0;
 
-    if (!productoSeleccionado) {
-        mostrarError('¡Elija un Producto!');
-    } else if (!loteCodigo) {
-        mostrarError('¡Ingrese un Código de Lote!');
-    } else if (cantidadProducto <= 0) {
-        mostrarError('¡Ingrese una Cantidad válida!');
-    } else if (!fechaVencimiento) {
-        mostrarError('¡Ingrese una Fecha de Vencimiento!');
-    } else if (precioUnitario <= 0) {
-        mostrarError('¡Ingrese un Precio de Compra válido!');
-    } else {
-        let productoArray = productoSeleccionado.split(' | ');
-        let nuevoProducto = {
-            id: productoArray[0],
-            nombre: productoSeleccionado,
-            codigo: loteCodigo,
-            cantidad: cantidadProducto,
-            vencimiento: fechaVencimiento,
-            precioCompra: precioUnitario,
-            total: (cantidadProducto * precioUnitario).toFixed(2) // Calcula el subtotal del producto
-        };
+                if (!productoSeleccionado) {
+                    mostrarError('¡Elija un Producto!');
+                } else if (!loteCodigo) {
+                    mostrarError('¡Ingrese un Código de Lote!');
+                } else if (cantidadProducto <= 0) {
+                    mostrarError('¡Ingrese una Cantidad válida!');
+                } else if (!fechaVencimiento) {
+                    mostrarError('¡Ingrese una Fecha de Vencimiento!');
+                } else if (precioUnitario <= 0) {
+                    mostrarError('¡Ingrese un Precio de Compra válido!');
+                } else {
+                    let productoArray = productoSeleccionado.split(' | ');
+                    let nuevoProducto = {
+                        id: productoArray[0],
+                        nombre: productoSeleccionado,
+                        codigo: loteCodigo,
+                        unidad_id: unidad_id,
+                        cantidad: cantidadProducto,
+                        vencimiento: fechaVencimiento,
+                        precioCompra: precioUnitario,
+                        total: (cantidadProducto * precioUnitario).toFixed(
+                            2) // Calcula el subtotal del producto
+                    };
 
-        prods.push(nuevoProducto);
-        actualizarTabla();
-    }
-});
+                    prods.push(nuevoProducto);
+                    actualizarTabla();
+                }
+            });
 
-// Función para actualizar la tabla y el total
-function actualizarTabla() {
-    let totalCompra = 0;
-    let contenidoTabla = '';
+            // Función para actualizar la tabla y el total
+            function actualizarTabla() {
+                let totalCompra = 0;
+                let contenidoTabla = '';
 
-    prods.forEach((prod, index) => {
-        totalCompra += parseFloat(prod.total);
+                prods.forEach((prod, index) => {
+                    totalCompra += parseFloat(prod.total);
 
-        contenidoTabla += `
-            <tr data-index="${index}">
-                <td>${prod.nombre}</td>
-                <td>${prod.codigo}</td>
-                <td>${prod.cantidad}</td>
-                <td>${prod.vencimiento}</td>
-                <td>${prod.precioCompra}</td>
-                <td>${prod.total}</td>
-                <td>
-                    <button class="borrar-producto btn btn-danger"><i class="fas fa-times-circle"></i></button>
-                </td>
-            </tr>
-        `;
-    });
+                    contenidoTabla += `
+                <tr data-index="${index}">
+                    <td>${prod.nombre}</td>
+                    <td>${prod.codigo}</td>
+                    <td>${prod.cantidad}</td>
+                    <td>${prod.vencimiento}</td>
+                    <td>S/.${prod.precioCompra}</td>
+                    <td>unidad</td>
+                    <td>${prod.total}</td>
 
-    $('#registros_compra').html(contenidoTabla);
-    $('#total').val(totalCompra.toFixed(2)); // Actualiza el total
+                    <td>
+                        <button class="borrar-producto btn btn-danger"><i class="fas fa-times-circle"></i></button>
+                    </td>
+                </tr>
+            `;
+                });
 
-    // Mostrar mensaje de éxito
-    $('#add-prod').hide('slow').show(1000).hide(2000);
+                $('#registros_compra').html(contenidoTabla);
+                $('#total').val(totalCompra.toFixed(2)); // Actualiza el total
 
-    // Limpiar los campos
-    $('#producto').val('').trigger('change');
-    $('#codigo_lote').val('');
-    $('#cantidad').val('');
-    $('#vencimiento').val('');
-    $('#precio_compra').val('');
-}
+                // Mostrar mensaje de éxito
+                $('#add-prod').hide('slow').show(1000).hide(2000);
+
+                // Limpiar los campos
+                $('#producto').val('').trigger('change');
+                $('#codigo_lote').val('');
+                $('#cantidad').val('');
+                $('#vencimiento').val('');
+                $('#precio_compra').val('');
+            }
 
             // Función para mostrar mensajes de error
             function mostrarError(mensaje) {
@@ -720,6 +746,13 @@ function actualizarTabla() {
                             $('#estado1').text(response.compra.estado);
                             $('#proveedor1').text(response.compra.proveedor);
                             $('#total1').text(response.compra.total);
+                            if (response.lotes.length > 0) {
+                                $('#unidad1').text(response.lotes[0].unidad);
+                            } else {
+                                $('#unidad1').text('Sin unidad');
+                            }
+
+
 
                             // Limpiar los detalles de los lotes antes de agregar nuevos
                             $('#detalles').empty();
@@ -732,7 +765,7 @@ function actualizarTabla() {
                                 tr.append('<td>' + lote.codigo + '</td>');
                                 tr.append('<td>' + lote.cantidad + '</td>');
                                 tr.append('<td>' + lote.vencimiento + '</td>');
-                                tr.append('<td>' + lote.precio_compra + '</td>');
+                                tr.append('<td>S/. ' + lote.precio_compra + '</td>');
                                 tr.append('<td>' + lote.producto + '</td>');
                                 tr.append('<td>' + lote.laboratorio.nombre +
                                     '</td>'); // Nombre del laboratorio

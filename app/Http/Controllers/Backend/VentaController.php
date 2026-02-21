@@ -51,7 +51,7 @@ class VentaController extends Controller
                 'nombre' => $producto->nombre,
                 'precio' => $producto->precio,
                 'concentracion' => $producto->concentracion,
-                'adicional' => $producto->adicional,
+                'adicional' => $producto->adicional->nombre ?? 'No disponible',
                 'laboratorio' => $producto->laboratorio->nombre ?? 'No disponible',
                 'presentacion' => $producto->presentacion->nombre ?? 'No disponible',
                 'stock' => $stock,
@@ -167,7 +167,7 @@ class VentaController extends Controller
     {
         $logoContent = file_get_contents(public_path('img/logo2.png'));
         // Convertir el logo a base64
-        $logoBase64 = 'data:image/png;base64,'.base64_encode($logoContent);
+        $logoBase64 = 'data:image/png;base64,' . base64_encode($logoContent);
 
         // Obtener la venta
         $venta = Venta::findOrFail($id);
@@ -313,10 +313,10 @@ class VentaController extends Controller
         $data = [];
         foreach ($ventas as $venta) {
             // Procesar cada venta para obtener los datos del cliente y vendedor
-            $cliente = $venta->cliente ? $venta->cliente->nombre.' '.$venta->cliente->apellidos : 'Sin Cliente';
+            $cliente = $venta->cliente ? $venta->cliente->nombre . ' ' . $venta->cliente->apellidos : 'Sin Cliente';
             $dni = $venta->cliente ? $venta->cliente->dni : 'Sin DNI';
             $estado = $venta->estado;
-            $vendedor = $venta->usuario ? $venta->usuario->nombre_us.' '.$venta->usuario->apellidos_us : 'Sin Vendedor';
+            $vendedor = $venta->usuario ? $venta->usuario->nombre_us . ' ' . $venta->usuario->apellidos_us : 'Sin Vendedor';
 
             $data[] = [
                 'codigo' => $venta->id,
@@ -339,8 +339,8 @@ class VentaController extends Controller
             $logoContent = file_get_contents(public_path('img/logo2.png'));
             $bg = file_get_contents(public_path('img/dimension.png'));
             // Convertir el logo a base64
-            $logoBase64 = 'data:image/jpeg;base64,'.base64_encode($logoContent);
-            $bg1 = 'data:image/png;base64,'.base64_encode($bg);
+            $logoBase64 = 'data:image/jpeg;base64,' . base64_encode($logoContent);
+            $bg1 = 'data:image/png;base64,' . base64_encode($bg);
         } catch (\Exception $e) {
             return redirect()->back()->with('error', 'No se pudo cargar la imagen del logo.');
         }
@@ -361,10 +361,25 @@ class VentaController extends Controller
             ->where('venta.id', $id)
             ->first();
 
-        // dd($venta);
-
         // Consulta de los productos relacionados a esta venta
-        $productos = DB::table('venta_producto')->join('productos', 'venta_producto.id_producto', '=', 'productos.id')->join('laboratorios', 'productos.id_lab', '=', 'laboratorios.id')->join('tipos_productos', 'productos.id_tip_prod', '=', 'tipos_productos.id')->join('presentaciones', 'productos.id_present', '=', 'presentaciones.id')->select('venta_producto.precio', 'venta_producto.cantidad', 'productos.nombre as producto', 'productos.concentracion', 'productos.adicional', 'laboratorios.nombre as laboratorio', 'presentaciones.nombre as presentacion', 'tipos_productos.nombre as tipo', 'venta_producto.subtotal')->where('venta_producto.id_venta', $id)->get();
+        $productos = DB::table('venta_producto')
+            ->join('productos', 'venta_producto.id_producto', '=', 'productos.id')
+            ->join('laboratorios', 'productos.id_lab', '=', 'laboratorios.id')
+            ->join('tipos_productos', 'productos.id_tip_prod', '=', 'tipos_productos.id')
+            ->join('adicionales', 'productos.id_adicional', '=', 'adicionales.id')
+            ->join('presentaciones', 'productos.id_present', '=', 'presentaciones.id')
+            ->select(
+                'venta_producto.precio',
+                'venta_producto.cantidad',
+                'productos.nombre as producto',
+                'productos.concentracion',
+                'adicionales.nombre as adicional',
+                'laboratorios.nombre as laboratorio',
+                'presentaciones.nombre as presentacion',
+                'tipos_productos.nombre as tipo',
+                'venta_producto.subtotal'
+            )->where('venta_producto.id_venta', $id)->get();
+
 
         $total = $venta->total; // Aquí obtienes directamente el total de la venta
 
@@ -420,7 +435,23 @@ class VentaController extends Controller
             ->first();
 
         // Consulta de los productos relacionados a esta venta
-        $productos = DB::table('venta_producto')->join('productos', 'venta_producto.id_producto', '=', 'productos.id')->join('laboratorios', 'productos.id_lab', '=', 'laboratorios.id')->join('tipos_productos', 'productos.id_tip_prod', '=', 'tipos_productos.id')->join('presentaciones', 'productos.id_present', '=', 'presentaciones.id')->select('venta_producto.precio', 'venta_producto.cantidad', 'productos.nombre as producto', 'productos.concentracion', 'productos.adicional', 'laboratorios.nombre as laboratorio', 'presentaciones.nombre as presentacion', 'tipos_productos.nombre as tipo', 'venta_producto.subtotal')->where('venta_producto.id_venta', $id)->get();
+        $productos = DB::table('venta_producto')
+            ->join('productos', 'venta_producto.id_producto', '=', 'productos.id')
+            ->join('laboratorios', 'productos.id_lab', '=', 'laboratorios.id')
+            ->join('tipos_productos', 'productos.id_tip_prod', '=', 'tipos_productos.id')
+            ->join('adicionales', 'productos.id_adicional', '=', 'adicionales.id')
+            ->join('presentaciones', 'productos.id_present', '=', 'presentaciones.id')
+            ->select(
+                'venta_producto.precio',
+                'venta_producto.cantidad',
+                'productos.nombre as producto',
+                'productos.concentracion',
+                'adicionales.nombre as adicional',
+                'laboratorios.nombre as laboratorio',
+                'presentaciones.nombre as presentacion',
+                'tipos_productos.nombre as tipo',
+                'venta_producto.subtotal'
+            )->where('venta_producto.id_venta', $id)->get();
 
         // Preparar la respuesta
         return response()->json([
@@ -628,5 +659,19 @@ class VentaController extends Controller
             ->get();
 
         return response()->json($clientes);
+    }
+
+
+
+    //crear parte de venta separado a un modulo
+
+    public function crear_venta()
+    {
+        if (Auth::check()) {
+            $usuario = Auth::user();
+            $nombre = $usuario->name;
+            $tipo = $usuario->tipo->nombre;
+        }
+        return view('admin.venta.crear_venta', compact('nombre', 'tipo', 'usuario'));
     }
 }

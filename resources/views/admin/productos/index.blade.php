@@ -93,22 +93,23 @@
                                 <div class="col-md-4">
                                     <div class="form-group">
                                         <label for="adicional">Adicional:</label>
-                                        <input type="text" class="form-control" name="adicional" id="adicional"
-                                            placeholder="Ingrese adicional del producto">
+                                        <select class="form-control select2" name="id_adicional" id="id_adicional"
+                                            style="width: 100%;">
+                                            <option value="">Seleccione una opción</option>
+                                            @foreach ($adiconal as $adi)
+                                                <option value="{{ $adi->id }}">{{ $adi->nombre }}</option>
+                                            @endforeach
+                                        </select>
+
                                     </div>
                                 </div>
                             </div>
                             <div class="row">
                                 <div class="col-md-4">
-                                   <div class="form-group">
-                                        <label for="precio">Precio:</label>
-                                        <input type="number"
-                                            class="form-control"
-                                            value="0.00"
-                                            name="precio"
-                                            id="precio"
-                                            step="0.01"
-                                            min="0"
+                                    <div class="form-group">
+                                        <label for="precio">Precio (Soles):</label>
+                                        <input type="number" class="form-control" value="0.00" name="precio"
+                                            id="precio" step="0.01" min="0"
                                             placeholder="Ingrese precio del producto">
                                     </div>
                                 </div>
@@ -225,17 +226,24 @@
                                 <div class="col-md-4">
                                     <div class="form-group">
                                         <label for="adicional">Adicional:</label>
-                                        <input type="text" class="form-control" name="edit_adicional"
-                                            id="edit_adicional" placeholder="Ingrese adicional del producto">
+                                        <select class="form-control select2" name="edit_adicional" id="edit_adicional"
+                                            style="width: 100%;">
+                                            <option value="">Seleccione una opción</option>
+                                            @foreach ($adiconal as $adi)
+                                                <option value="{{ $adi->id }}">{{ $adi->nombre }}</option>
+                                            @endforeach
+                                        </select>
                                     </div>
                                 </div>
                             </div>
                             <div class="row">
                                 <div class="col-md-4">
                                     <div class="form-group">
-                                        <label for="precio">Precio:</label>
+                                        <label for="precio">Precio (Soles):</label>
                                         <input type="number" class="form-control" value="1" name="edit_precio"
-                                            id="edit_precio" placeholder="Ingrese precio del producto">
+                                            id="edit_precio" placeholder="Ingrese precio del producto" step="0.01"
+                                            min="0">
+
                                     </div>
                                 </div>
                                 <div class="col-md-4">
@@ -245,7 +253,8 @@
                                             id="edit_laboratorio" style="width: 100%;">
                                             <option value="">Seleccione un laboratorio</option>
                                             @foreach ($laboratorios as $laboratorio)
-                                                <option value="{{ $laboratorio->id }}">{{ $laboratorio->nombre }}</option>
+                                                <option value="{{ $laboratorio->id }}">{{ $laboratorio->nombre }}
+                                                </option>
                                             @endforeach
                                         </select>
                                     </div>
@@ -414,7 +423,7 @@
                         data.forEach(prod => {
                             // Construimos una tarjeta (card) para cada producto con sus detalles
                             template += `
-                                <div prodId="${prod.id}" prodNomb="${prod.nombre}" prodPrecio="${prod.precio}" prodConcent="${prod.concentracion}" prodAdicional="${prod.adicional}" prodLab="${prod.laboratorio_id}" prodTip="${prod.tipo_id}" prodPrese="${prod.presentacion_id}" prodAvatar="${prod.avatar}" class="col-12 col-sm-6 col-md-4 d-flex align-items-stretch flex-column">
+                                <div prodId="${prod.id}" prodNomb="${prod.nombre}" prodPrecio="${prod.precio}" prodConcent="${prod.concentracion}" prodAdicional="${prod.adicional_id}" prodLab="${prod.laboratorio_id}" prodTip="${prod.tipo_id}" prodPrese="${prod.presentacion_id}" prodAvatar="${prod.avatar}" class="col-12 col-sm-6 col-md-4 d-flex align-items-stretch flex-column">
                                     <div class="card bg-light d-flex flex-fill">
                                         <div class="card-header text-muted border-bottom-0">
                                             <i class="fas fa-lg fa-cubes mr-1"></i> ${prod.stock}
@@ -423,7 +432,7 @@
                                             <div class="row">
                                                 <div class="col-7">
                                                     <h2 class="lead"><b>${prod.nombre}</b></h2>
-                                                    <h4 class="lead"><b><i class="fas fa-lg fa-dollar-sign mr-1"></i>${prod.precio}</b></h4>
+                                                    <h4 class="lead"><b><strong>S/.</strong> ${prod.precio}</b></h4>
                                                     <ul class="ml-4 mb-0 fa-ul text-muted">
                                                         <li class="small"><span class="fa-li  mr-1"><i class="fas fa-lg fa-mortar-pestle"></i></span><b>Concentración:</b> ${prod.concentracion}</li>
                                                         <li class="small"><span class="fa-li"><i class="fas fa-lg fa-prescription-bottle-alt"></i></span><b> Adicional:</b>${prod.adicional}</li>
@@ -481,8 +490,7 @@
 
             $(document).on('click', '.avatar', (e) => {
                 funcion = "cambiar_avatar";
-                const elemento = $(this)[0].activeElement.parentElement.parentElement.parentElement
-                    .parentElement;
+                const elemento = $(this)[0].activeElement.parentElement.parentElement.parentElement.parentElement;
 
                 const id = $(elemento).attr('prodId');
                 const nombre = $(elemento).attr('prodNomb');
@@ -559,10 +567,12 @@
                 const tipo = $(elemento).attr('prodTip');
                 const presentacion = $(elemento).attr('prodPrese');
 
+                console.log(adicional)
+
                 $('#id_edit_prod').val(id);
                 $('#edit_nombre').val(nombre);
                 $('#edit_concentracion').val(concentracion);
-                $('#edit_adicional').val(adicional);
+                $('#edit_adicional').val(adicional).trigger('change');
                 $('#edit_precio').val(precio);
                 $('#edit_laboratorio').val(laboratorio).trigger('change');
                 $('#edit_tipo').val(tipo).trigger('change');

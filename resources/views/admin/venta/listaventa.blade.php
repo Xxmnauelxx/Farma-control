@@ -41,93 +41,6 @@
         <div class="container-fluid">
             <div class="card card-primary">
                 <div class="card-header">
-                    <h3 class="card-title">Informes</h3>
-                </div>
-                <div class="animate__animated  animate__fadeInDown card-body table-responsive">
-                    <div class="row">
-                        <div class="col-md-3 col-sm-6 col-12">
-                            <a href="{{ route('mas_consulta') }}" class="info-box-link" title="Ver mas Informacion">
-                                <div class="info-box">
-                                    <span class="info-box-icon bg-info">
-                                        <i class="fab fa-sellsy"></i>
-                                    </span>
-
-                                    <div class="info-box-content">
-                                        <span class="info-box-text">Venta Del Dia Por Vendedor</span>
-                                        <span id="venta_dia_vendedor" class="info-box-number">1,410</span>
-                                    </div>
-                                </div>
-                            </a>
-                        </div>
-
-                        <div class="col-md-3 col-sm-6 col-12">
-                            <a href="{{ route('mas_consulta') }}" class="info-box-link">
-                                <div class="info-box">
-                                    <span class="info-box-icon bg-success"><i class="fas fa-shopping-bag"></i></span>
-
-                                    <div class="info-box-content">
-                                        <span class="info-box-text">Venta Diria</span>
-                                        <span id="venta_diaria" class="info-box-number">410</span>
-                                    </div>
-                                </div>
-                            </a>
-                        </div>
-
-                        <div class="col-md-3 col-sm-6 col-12">
-                            <a href="{{ route('mas_consulta') }}" class="info-box-link">
-                                <div class="info-box">
-                                    <span class="info-box-icon bg-warning"> <i class="fas fa-calendar-alt"></i></span>
-
-                                    <div class="info-box-content">
-                                        <span class="info-box-text">Venta Mensual</span>
-                                        <span id="venta_mensual" class="info-box-number">0</span>
-                                    </div>
-                                </div>
-                            </a>
-                        </div>
-
-                        <div class="col-md-3 col-sm-6 col-12">
-                            <a href="{{ route('mas_consulta') }}" class="info-box-link">
-                                <div class="info-box">
-                                    <span class="info-box-icon bg-danger">
-                                        <i class="fas fa-chart-bar"></i>
-                                    </span>
-
-                                    <div class="info-box-content">
-                                        <span class="info-box-text">Venta Anual</span>
-                                        <span id="venta_anual" class="info-box-number">0</span>
-                                    </div>
-                                </div>
-                            </a>
-                        </div>
-
-                        <div class="col-md-3 col-sm-6 col-12">
-                            <a href="{{ route('mas_consulta') }}" class="info-box-link">
-                                <div class="info-box">
-                                    <span class="info-box-icon bg-secondary">
-                                        <i class="fas fa-wallet"></i>
-                                    </span>
-
-                                    <div class="info-box-content">
-                                        <span class="info-box-text">Ganancia Mensual</span>
-                                        <span id="ganancia_mensual" class="info-box-number">0</span>
-                                    </div>
-                                </div>
-                            </a>
-                        </div>
-                    </div>
-                </div>
-                <div class="card-footer">
-
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <section>
-        <div class="container-fluid">
-            <div class="card card-primary">
-                <div class="card-header">
                     <h3 class="card-title">Listas de Venta Realizadas</h3>
 
                 </div>
@@ -188,7 +101,7 @@
                     <div class="table-responsive">
                         <table class="table table-hover  text-nowrap">
                             <thead class="table-success">
-                                <th>Cantidad</th>
+                                <th>Cantidad/Unidad</th>
                                 <th>Precio</th>
                                 <th>Producto</th>
                                 <th>Concentracion</th>
@@ -206,7 +119,7 @@
                     </div>
 
                     <div class="float-right input-group-append">
-                        <h3 class="mr-1">Total: </h3>
+                        <h3 class="mr-1">Total (S/.): </h3>
                         <h3 class="mr-1" id="total"></h3>
                     </div>
                 </div>
@@ -226,26 +139,8 @@
 
     <script>
         $(document).ready(function() {
-            mostrar_consulta();
             listar_ventas();
             var datatable;
-
-            function mostrar_consulta() {
-                var url = "{{ route('ver_consulta') }}";
-                $.post(url, {
-                    _token: '{{ csrf_token() }}'
-                }, (response) => {
-                    console.log(response);
-
-                    if (typeof response === 'object') {
-                        $('#venta_dia_vendedor').html((response.venta_dia_vendedor * 1).toFixed(2));
-                        $('#venta_diaria').html((response.venta_diaria * 1).toFixed(2));
-                        $('#venta_mensual').html((response.venta_mensual * 1).toFixed(2));
-                        $('#venta_anual').html((response.venta_anual * 1).toFixed(2));
-                        $('#ganancia_mensual').html((response.ganancia_mensual * 1).toFixed(2));
-                    }
-                });
-            }
 
             function listar_ventas() {
                 var url = "{{ route('listar_ventas') }}";
@@ -314,46 +209,47 @@
                         {
                             data: null,
                             defaultContent: `
-                <button class="imprimir btn btn-success">
-                    <i class="fas fa-print"></i>
-                </button>
-                <button class="ver btn btn-primary" type="button" data-toggle="modal" data-target="#vista_venta">
-                    <i class="fas fa-search"></i>
-                </button>
-                <button class="borrar btn btn-danger">
-                    <i class="fas fa-window-close"></i>
-                </button>
-            `,
-                            render: function(data, type, row) {
-                                // Si el estado de la venta es cancelado, deshabilitamos el botón de eliminar
-                                if (row.estado === 'cancelado') {
-                                    return `
                         <button class="imprimir btn btn-success">
                             <i class="fas fa-print"></i>
                         </button>
                         <button class="ver btn btn-primary" type="button" data-toggle="modal" data-target="#vista_venta">
                             <i class="fas fa-search"></i>
                         </button>
-                        <button class="borrar btn btn-danger" disabled>
+                        <button class="borrar btn btn-danger">
                             <i class="fas fa-window-close"></i>
                         </button>
-                    `;
+                    `,
+                            render: function(data, type, row) {
+                                // Si el estado de la venta es cancelado, deshabilitamos el botón de eliminar
+                                if (row.estado === 'cancelado') {
+                                    return `
+                                <button class="imprimir btn btn-success">
+                                    <i class="fas fa-print"></i>
+                                </button>
+                                <button class="ver btn btn-primary" type="button" data-toggle="modal" data-target="#vista_venta">
+                                    <i class="fas fa-search"></i>
+                                </button>
+                                <button class="borrar btn btn-danger" disabled>
+                                    <i class="fas fa-window-close"></i>
+                                </button>
+                            `;
                                 }
                                 return `
-                    <button class="imprimir btn btn-success">
-                        <i class="fas fa-print"></i>
-                    </button>
-                    <button class="ver btn btn-primary" type="button" data-toggle="modal" data-target="#vista_venta">
-                        <i class="fas fa-search"></i>
-                    </button>
-                    <button class="borrar btn btn-danger">
-                        <i class="fas fa-window-close"></i>
-                    </button>
-                    `;
+                            <button class="imprimir btn btn-success">
+                                <i class="fas fa-print"></i>
+                            </button>
+                            <button class="ver btn btn-primary" type="button" data-toggle="modal" data-target="#vista_venta">
+                                <i class="fas fa-search"></i>
+                            </button>
+                            <button class="borrar btn btn-danger">
+                                <i class="fas fa-window-close"></i>
+                            </button>
+                            `;
                             }
                         }
                     ],
-                    "destroy": true
+                    "destroy": true,
+                    "language": espanol
                 });
             }
 
@@ -392,18 +288,18 @@
                         let registroHtml = '';
                         response.detalles.forEach(function(detalle) {
                             registroHtml += `
-                    <tr>
-                        <td>${detalle.cantidad}</td>
-                        <td>${detalle.precio}</td>
-                        <td>${detalle.producto}</td>
-                        <td>${detalle.concentracion}</td>
-                        <td>${detalle.adicional}</td>
-                        <td>${detalle.laboratorio}</td>
-                        <td>${detalle.presentacion}</td>
-                        <td>${detalle.tipo}</td>
-                        <td>${detalle.subtotal}</td>
-                    </tr>
-                `;
+                            <tr>
+                                <td>${detalle.cantidad}</td>
+                                <td>S/. ${detalle.precio}</td>
+                                <td>${detalle.producto}</td>
+                                <td>${detalle.concentracion}</td>
+                                <td>${detalle.adicional}</td>
+                                <td>${detalle.laboratorio}</td>
+                                <td>${detalle.presentacion}</td>
+                                <td>${detalle.tipo}</td>
+                                <td>${detalle.subtotal}</td>
+                            </tr>
+                        `;
                         });
                         $('#registro').html(registroHtml);
 
@@ -516,5 +412,249 @@
 
 
         });
+
+
+        let espanol = {
+            "processing": "Procesando...",
+            "lengthMenu": "Mostrar _MENU_ registros",
+            "zeroRecords": "No se encontraron resultados",
+            "emptyTable": "Ningún dato disponible en esta tabla",
+            "infoEmpty": "Mostrando registros del 0 al 0 de un total de 0 registros",
+            "infoFiltered": "(filtrado de un total de _MAX_ registros)",
+            "search": "Buscar:",
+            "infoThousands": ",",
+            "loadingRecords": "No hay datos que Mostrar...",
+            "paginate": {
+                "first": "Primero",
+                "last": "Último",
+                "next": "Siguiente",
+                "previous": "Anterior"
+            },
+            "aria": {
+                "sortAscending": ": Activar para ordenar la columna de manera ascendente",
+                "sortDescending": ": Activar para ordenar la columna de manera descendente"
+            },
+            "buttons": {
+                "copy": "Copiar",
+                "colvis": "Visibilidad",
+                "collection": "Colección",
+                "colvisRestore": "Restaurar visibilidad",
+                "copyKeys": "Presione ctrl o u2318 + C para copiar los datos de la tabla al portapapeles del sistema. <br \/> <br \/> Para cancelar, haga clic en este mensaje o presione escape.",
+                "copySuccess": {
+                    "1": "Copiada 1 fila al portapapeles",
+                    "_": "Copiadas %ds fila al portapapeles"
+                },
+                "copyTitle": "Copiar al portapapeles",
+                "csv": "CSV",
+                "excel": "Excel",
+                "pageLength": {
+                    "-1": "Mostrar todas las filas",
+                    "_": "Mostrar %d filas"
+                },
+                "pdf": "PDF",
+                "print": "Imprimir",
+                "renameState": "Cambiar nombre",
+                "updateState": "Actualizar",
+                "createState": "Crear Estado",
+                "removeAllStates": "Remover Estados",
+                "removeState": "Remover",
+                "savedStates": "Estados Guardados",
+                "stateRestore": "Estado %d"
+            },
+            "autoFill": {
+                "cancel": "Cancelar",
+                "fill": "Rellene todas las celdas con <i>%d<\/i>",
+                "fillHorizontal": "Rellenar celdas horizontalmente",
+                "fillVertical": "Rellenar celdas verticalmentemente"
+            },
+            "decimal": ",",
+            "searchBuilder": {
+                "add": "Añadir condición",
+                "button": {
+                    "0": "Constructor de búsqueda",
+                    "_": "Constructor de búsqueda (%d)"
+                },
+                "clearAll": "Borrar todo",
+                "condition": "Condición",
+                "conditions": {
+                    "date": {
+                        "after": "Despues",
+                        "before": "Antes",
+                        "between": "Entre",
+                        "empty": "Vacío",
+                        "equals": "Igual a",
+                        "notBetween": "No entre",
+                        "notEmpty": "No Vacio",
+                        "not": "Diferente de"
+                    },
+                    "number": {
+                        "between": "Entre",
+                        "empty": "Vacio",
+                        "equals": "Igual a",
+                        "gt": "Mayor a",
+                        "gte": "Mayor o igual a",
+                        "lt": "Menor que",
+                        "lte": "Menor o igual que",
+                        "notBetween": "No entre",
+                        "notEmpty": "No vacío",
+                        "not": "Diferente de"
+                    },
+                    "string": {
+                        "contains": "Contiene",
+                        "empty": "Vacío",
+                        "endsWith": "Termina en",
+                        "equals": "Igual a",
+                        "notEmpty": "No Vacio",
+                        "startsWith": "Empieza con",
+                        "not": "Diferente de",
+                        "notContains": "No Contiene",
+                        "notStarts": "No empieza con",
+                        "notEnds": "No termina con"
+                    },
+                    "array": {
+                        "not": "Diferente de",
+                        "equals": "Igual",
+                        "empty": "Vacío",
+                        "contains": "Contiene",
+                        "notEmpty": "No Vacío",
+                        "without": "Sin"
+                    }
+                },
+                "data": "Data",
+                "deleteTitle": "Eliminar regla de filtrado",
+                "leftTitle": "Criterios anulados",
+                "logicAnd": "Y",
+                "logicOr": "O",
+                "rightTitle": "Criterios de sangría",
+                "title": {
+                    "0": "Constructor de búsqueda",
+                    "_": "Constructor de búsqueda (%d)"
+                },
+                "value": "Valor"
+            },
+            "searchPanes": {
+                "clearMessage": "Borrar todo",
+                "collapse": {
+                    "0": "Paneles de búsqueda",
+                    "_": "Paneles de búsqueda (%d)"
+                },
+                "count": "{total}",
+                "countFiltered": "{shown} ({total})",
+                "emptyPanes": "Sin paneles de búsqueda",
+                "loadMessage": "Cargando paneles de búsqueda",
+                "title": "Filtros Activos - %d",
+                "showMessage": "Mostrar Todo",
+                "collapseMessage": "Colapsar Todo"
+            },
+            "select": {
+                "cells": {
+                    "1": "1 celda seleccionada",
+                    "_": "%d celdas seleccionadas"
+                },
+                "columns": {
+                    "1": "1 columna seleccionada",
+                    "_": "%d columnas seleccionadas"
+                },
+                "rows": {
+                    "1": "1 fila seleccionada",
+                    "_": "%d filas seleccionadas"
+                }
+            },
+            "thousands": ".",
+            "datetime": {
+                "previous": "Anterior",
+                "next": "Proximo",
+                "hours": "Horas",
+                "minutes": "Minutos",
+                "seconds": "Segundos",
+                "unknown": "-",
+                "amPm": [
+                    "AM",
+                    "PM"
+                ],
+                "months": {
+                    "0": "Enero",
+                    "1": "Febrero",
+                    "10": "Noviembre",
+                    "11": "Diciembre",
+                    "2": "Marzo",
+                    "3": "Abril",
+                    "4": "Mayo",
+                    "5": "Junio",
+                    "6": "Julio",
+                    "7": "Agosto",
+                    "8": "Septiembre",
+                    "9": "Octubre"
+                },
+                "weekdays": [
+                    "Dom",
+                    "Lun",
+                    "Mar",
+                    "Mie",
+                    "Jue",
+                    "Vie",
+                    "Sab"
+                ]
+            },
+            "editor": {
+                "close": "Cerrar",
+                "create": {
+                    "button": "Nuevo",
+                    "title": "Crear Nuevo Registro",
+                    "submit": "Crear"
+                },
+                "edit": {
+                    "button": "Editar",
+                    "title": "Editar Registro",
+                    "submit": "Actualizar"
+                },
+                "remove": {
+                    "button": "Eliminar",
+                    "title": "Eliminar Registro",
+                    "submit": "Eliminar",
+                    "confirm": {
+                        "_": "¿Está seguro que desea eliminar %d filas?",
+                        "1": "¿Está seguro que desea eliminar 1 fila?"
+                    }
+                },
+                "error": {
+                    "system": "Ha ocurrido un error en el sistema (<a target=\"\\\" rel=\"\\ nofollow\" href=\"\\\">Más información&lt;\\\/a&gt;).<\/a>"
+                },
+                "multi": {
+                    "title": "Múltiples Valores",
+                    "info": "Los elementos seleccionados contienen diferentes valores para este registro. Para editar y establecer todos los elementos de este registro con el mismo valor, hacer click o tap aquí, de lo contrario conservarán sus valores individuales.",
+                    "restore": "Deshacer Cambios",
+                    "noMulti": "Este registro puede ser editado individualmente, pero no como parte de un grupo."
+                }
+            },
+            "info": "Mostrando _START_ a _END_ de _TOTAL_ registros",
+            "stateRestore": {
+                "creationModal": {
+                    "button": "Crear",
+                    "name": "Nombre:",
+                    "order": "Clasificación",
+                    "paging": "Paginación",
+                    "search": "Busqueda",
+                    "select": "Seleccionar",
+                    "columns": {
+                        "search": "Búsqueda de Columna",
+                        "visible": "Visibilidad de Columna"
+                    },
+                    "title": "Crear Nuevo Estado",
+                    "toggleLabel": "Incluir:"
+                },
+                "emptyError": "El nombre no puede estar vacio",
+                "removeConfirm": "¿Seguro que quiere eliminar este %s?",
+                "removeError": "Error al eliminar el registro",
+                "removeJoiner": "y",
+                "removeSubmit": "Eliminar",
+                "renameButton": "Cambiar Nombre",
+                "renameLabel": "Nuevo nombre para %s",
+                "duplicateError": "Ya existe un Estado con este nombre.",
+                "emptyStates": "No hay Estados guardados",
+                "removeTitle": "Remover Estado",
+                "renameTitle": "Cambiar Nombre Estado"
+            }
+        }
     </script>
 @endsection

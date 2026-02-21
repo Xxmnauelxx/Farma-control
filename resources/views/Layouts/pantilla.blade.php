@@ -98,6 +98,7 @@
                         <i class="fas fa-bars"></i>
                     </a>
                 </li>
+
                 {{-- proceso de carrito para la venta --}}
                 <li class="animate__animated animate__wobble nav-item dropdown" id="cat-carrito" style="display: none;">
                     <img src="{{ asset('img/carrito.png') }}" class="imagen-carrito nav-link dropdown-toggle"
@@ -346,7 +347,7 @@
                         <li class="animate__animated animate__jackInTheBox nav-header">Control</li>
                         <li class="nav-item ">
                             <a href="#" class="nav-link">
-                                <i class="nav-icon fas fa-shopping-cart"></i>
+                                <i class="nav-icon fas fa-file-invoice"></i>
                                 <p>
                                     Gestion de Ventas
                                     <i class="fas fa-angle-left right"></i>
@@ -356,7 +357,7 @@
                             <ul class="nav nav-treeview">
 
                                 <li class="nav-item">
-                                    <a href="{{ route('vistaVentas') }}" class="nav-link">
+                                    <a href="{{ route('crear_venta') }}" class="nav-link">
                                         <i class="far fa-money-bill-alt  nav-icon"></i>
                                         <p>Ventas</p>
                                     </a>
@@ -364,7 +365,7 @@
 
                                 <li class="nav-item">
                                     <a href="{{ route('vistaVentas') }}" class="nav-link">
-                                        <i class="far fa-money-bill-alt  nav-icon"></i>
+                                        <i class="fas fa-history  nav-icon"></i>
                                         <p>Historial de Ventas</p>
                                     </a>
                                 </li>

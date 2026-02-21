@@ -149,7 +149,7 @@
             border-bottom: 1px solid #cee1f1;
             white-space: nowrap;
             font-weight: normal;
-            font-size: 15px;
+            font-size: 11px;
         }
 
         table .service {
@@ -174,7 +174,7 @@
         }
 
         table td.total {
-            font-size: 12px;
+            font-size: 11px;
             color: rgb(3, 80, 0);
         }
 
@@ -293,7 +293,7 @@
                     <th class="service">Laboratorio</th>
                     <th class="service">Presentacion</th>
                     <th class="service">Tipo</th>
-                    <th class="service">Cantidad</th>
+                    <th class="service">Cantidad/Unidad</th>
                     <th class="service">Precio</th>
                     <th class="service">Subtotal</th>
                 </tr>
@@ -308,22 +308,22 @@
                         <td class="servic">{{ $pro->presentacion }}</td>
                         <td class="servic">{{ $pro->tipo }}</td>
                         <td class="servic">{{ $pro->cantidad }}</td>
-                        <td class="servic">{{ $pro->precio }}</td>
+                        <td class="servic">S/. {{ $pro->precio }}</td>
                         <td class="servic">{{ $pro->subtotal }}</td>
                     </tr>
                 @endforeach
 
                 <tr>
                     <td colspan="8" class="grand total">TOTAL</td>
-                    <td class="grand total">CS/. {{ number_format($totalConIgv, 2) }} </td>
+                    <td class="grand total">S/. {{ number_format($totalConIgv, 2) }} </td>
                 </tr>
                 <tr>
                     <td colspan="8" class="grand total">IGV (15%)</td>
-                    <td class="grand total">CS/. {{ number_format($igv, 2) }}</td>
+                    <td class="grand total">S/. {{ number_format($igv, 2) }}</td>
                 </tr>
                 <tr>
                     <td colspan="8" class="grand total">TOTAL CON IGV</td>
-                    <td class="grand total">CS/. {{ number_format($totalConIgv, 2) }}</td>
+                    <td class="grand total">S/. {{ number_format($totalConIgv, 2) }}</td>
                 </tr>
 
             </tbody>
@@ -354,6 +354,6 @@
     <footer>
         <div>Created by Warpice (Manuel Tananta Lino) Ingeniero en Sistema.</div>
     </footer>
-</body>s
+</body>
 
 </html>

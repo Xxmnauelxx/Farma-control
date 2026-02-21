@@ -8,6 +8,7 @@ use App\Models\Estado;
 use App\Models\Lote;
 use App\Models\Producto;
 use App\Models\Proveedor;
+use App\Models\Unidad;
 use App\Models\User;
 use Dompdf\Dompdf;
 use Dompdf\Options;
@@ -31,9 +32,12 @@ class CompraController extends Controller
         $compras = DB::table('compras as c')->select(DB::raw("CONCAT(c.id, ' | ', c.codigo) as codigo"), 'c.id', 'c.fecha_compra', 'c.fecha_entrega', 'c.total', 'e.nombre as estado', 'p.nombre as proveedor')->join('estado_pago as e', 'e.id', '=', 'c.id_estado_pago')->join('proveedores as p', 'p.id', '=', 'c.id_proveedor')->get();
 
         $estado = Estado::all();
+        $unidad = Unidad::find(5);
+
+
         //  dd($compras);
 
-        return view('admin.compra.index', compact('usuario', 'nombre', 'tipo', 'compras', 'estado'));
+        return view('admin.compra.index', compact('usuario', 'nombre', 'tipo', 'compras', 'estado','unidad'));
     }
 
     public function llenar_producto()
@@ -41,7 +45,7 @@ class CompraController extends Controller
         // Paso 1: Obtener productos con sus relaciones
         // Usamos el modelo Producto y cargamos las relaciones: laboratorio, tipoProducto, presentacion
         // Solo traemos los productos cuyo estado sea 'Activo' y los ordenamos alfabéticamente por nombre
-        $productos = Producto::with(['laboratorio', 'tipoProducto', 'presentacion'])
+        $productos = Producto::with(['laboratorio', 'tipoProducto', 'presentacion', 'adicional'])
             ->where('estado', 'Activo') // Filtramos por el estado 'Activo'
             ->orderBy('nombre', 'ASC') // Ordenamos los productos alfabéticamente por el nombre
             ->get(); // Ejecutamos la consulta y obtenemos los resultados
@@ -56,18 +60,15 @@ class CompraController extends Controller
             // En cada iteración, formateamos los datos de cada producto
             // Concatenamos los datos necesarios con el separador ' | ' y lo agregamos al array $json
             $json[] = [
-                'nombre' => $producto->id.
-                    ' | '. // ID del producto
-                    $producto->nombre.
-                    ' | '. // Nombre del producto
-                    $producto->concentracion.
-                    ' | '. // Concentración del producto
-                    $producto->adicional.
-                    ' | '. // Información adicional
-                    $producto->laboratorio->nombre.
-                    ' | '. // Nombre del laboratorio (relación)
-                    $producto->presentacion->nombre, // Nombre de la presentación (relación)
+                'nombre' =>
+                    $producto->id . ' | ' .
+                    $producto->nombre . ' | ' .
+                    $producto->concentracion . ' | ' .
+                    ($producto->adicional?->nombre ?? 'Sin adicional') . ' | ' .
+                    ($producto->laboratorio?->nombre ?? 'Sin laboratorio') . ' | ' .
+                    ($producto->presentacion?->nombre ?? 'Sin presentación'),
             ];
+
         }
 
         // Paso 4: Retornar los datos como respuesta JSON
@@ -95,6 +96,8 @@ class CompraController extends Controller
 
     public function crear_compra(Request $request)
     {
+
+       // dd($request->all());
         // Validación de los datos recibidos
         $validated = $request->validate([
             'productosString' => 'required|string',
@@ -127,6 +130,7 @@ class CompraController extends Controller
                 'vencimiento' => $prod->vencimiento,
                 'precio_compra' => $prod->precioCompra,
                 'id_compra' => $id_compra,
+                'id_unidad'=>$prod->unidad_id,
                 'id_producto' => $prod->id,
             ]);
         }
@@ -139,9 +143,9 @@ class CompraController extends Controller
     public function extraer_lote_compra($id)
     {
         // Obtener la compra con los lotes relacionados
-        $compra = Compra::with('lotes.producto')->find($id);
+        $compra = Compra::with('lotes.producto','lotes.unidad')->find($id);
 
-        if (! $compra) {
+        if (!$compra) {
             return response()->json(['success' => false]);
         }
 
@@ -167,6 +171,7 @@ class CompraController extends Controller
                 'laboratorio' => $lote->producto->laboratorio,
                 'presentacion' => $lote->producto->presentacion,
                 'tipo' => $lote->producto->tipoProducto,
+                'unidad' => $lote->unidad?->nombre ?? 'sin unidad',
             ];
         }
 
@@ -208,7 +213,7 @@ class CompraController extends Controller
         // ✅ Paso 3: Verificar si el registro existe
         // Si no se encuentra el registro en la base de datos, se devuelve un mensaje de error
         // y se redirige a la misma página sin realizar cambios.
-        if (! $registro) {
+        if (!$registro) {
             return back()->with('error', 'Registro no encontrado.');
         }
 
@@ -235,8 +240,8 @@ class CompraController extends Controller
             $logoContent = file_get_contents(public_path('img/logo2.png'));
             $bg = file_get_contents(public_path('img/dimension.png'));
             // Convertir el logo a base64
-            $logoBase64 = 'data:image/jpeg;base64,'.base64_encode($logoContent);
-            $bg1 = 'data:image/png;base64,'.base64_encode($bg);
+            $logoBase64 = 'data:image/jpeg;base64,' . base64_encode($logoContent);
+            $bg1 = 'data:image/png;base64,' . base64_encode($bg);
         } catch (\Exception $e) {
             return redirect()->back()->with('error', 'No se pudo cargar la imagen del logo.');
         }
@@ -260,7 +265,7 @@ class CompraController extends Controller
             ->firstOrFail();
 
         // Si no se encuentra la compra, retornar error
-        if (! $compra) {
+        if (!$compra) {
             return response()->json(['error' => 'Compra no encontrada'], 404);
         }
 
@@ -270,6 +275,8 @@ class CompraController extends Controller
             ->join('laboratorios', 'productos.id_lab', '=', 'laboratorios.id')
             ->join('tipos_productos', 'productos.id_tip_prod', '=', 'tipos_productos.id')
             ->join('presentaciones', 'productos.id_present', '=', 'presentaciones.id')
+            ->join('adicionales', 'productos.id_adicional', '=', 'adicionales.id')
+            ->join('medidas', 'lote.id_unidad', '=', 'medidas.id')
             ->select([
                 'lote.codigo',
                 'lote.cantidad',
@@ -277,10 +284,11 @@ class CompraController extends Controller
                 'lote.precio_compra',
                 'productos.nombre as producto',
                 'productos.concentracion',
-                'productos.adicional',
+                'adicionales.nombre as adicional',
                 'laboratorios.nombre as laboratorio',
                 'tipos_productos.nombre as tipo',
                 'presentaciones.nombre as presentacion',
+                'medidas.nombre as unidad'
             ])
             ->get();
 
